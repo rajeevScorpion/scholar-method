@@ -172,3 +172,16 @@ test("init writes the default writing object; writing profile stays opt-in; vali
   assert.match(v.out, /writing\.protected_terms must be an array/);
   assert.match(v.out, /WARN .*unknown writing key "mystery"/);
 });
+
+test("detect maps numbered folders, Markdown chapters, visual ledger, asset register and Excalidraw boards", () => {
+  const dir = tmp("scholar-detect-");
+  const w = (p, c = "x\n") => { mkdirSync(join(dir, p, ".."), { recursive: true }); writeFileSync(join(dir, p), c); };
+  w("02_chapters/ch01_intro.md"); w("02_chapters/ch02_review.md"); w("04_assets/asset_register.md"); w("04_assets/visual_asset_ledger.md");
+  w("04_assets/boards/work.excalidraw", "{}"); w("04_assets/figures/a.png");
+  const r = sch(dir, "init", "--dry-run");
+  assert.match(r.out, /drafts\s+-> 02_chapters\b/);
+  assert.match(r.out, /assets\s+-> 04_assets\b/);
+  assert.match(r.out, /visual_ledger\s+-> 04_assets\/visual_asset_ledger\.md/);
+  assert.match(r.out, /asset_register\s+-> 04_assets\/asset_register\.md/);
+  assert.match(r.out, /boards\s+-> 04_assets\/boards/);
+});

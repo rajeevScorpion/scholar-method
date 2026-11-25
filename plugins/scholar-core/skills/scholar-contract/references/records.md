@@ -35,8 +35,8 @@ bundle-exported, `branch harvest/<id> (local, not pushed)`, submitted, merged). 
 ## scholar.json
 `method_version`, `profile` (`kind` thesis|paper|review|unset, `citation_style`, `writing_profile`: a profile name such as
 `indian-academic-english`, a repo-relative path, or null; the only place a writing profile is selected),
-`paths` (status, handoff, decisions, sources, bib, style_guide, drafts, assets, quarto, agents_md, claude_md,
-codex_agents; each a repo-relative path or null), `capture` (`batch|ask|off`), `harvest_outbox` (`tracked|ignored`),
+`paths` (status, handoff, decisions, sources, bib, style_guide, drafts, assets, quarto, visual_ledger, asset_register,
+boards, agents_md, claude_md, codex_agents; each a repo-relative path or null), `capture` (`batch|ask|off`), `harvest_outbox` (`tracked|ignored`),
 `writing` (lint switches, below), `harvest` (`allow_domains`: public documentation domains a proposal may link to,
 default none; `deny_terms`: words that must never appear in a proposal, such as title words, names, institution; set
 at adoption), `related_projects` (empty unless the scholar opts in, naming each project), `external_ids` (IDs or citekeys that

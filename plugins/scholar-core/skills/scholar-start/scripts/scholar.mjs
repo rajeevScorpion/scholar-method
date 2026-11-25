@@ -164,6 +164,9 @@ const RULES = [
   ["style_guide", (n) => /style[-_ ]?guide/.test(n)],
   ["status", (n) => /(^|[^a-z])(status|state)([^a-z]|$)/.test(n) && n.endsWith(".md")],
   ["quarto", (n) => n === "_quarto.yml" || n === "_quarto.yaml"],
+  ["visual_ledger", (n) => /visual.*ledger/.test(n) && n.endsWith(".md")],
+  ["asset_register", (n) => /asset[-_ ]?regist/.test(n) && n.endsWith(".md")],
+  ["boards", (n) => n.endsWith(".excalidraw")],
 ];
 
 function detect(root) {
@@ -174,14 +177,19 @@ function detect(root) {
     const rule = RULES.find(([, test]) => test(name));
     if (rule && !found[rule[0]]) found[rule[0]] = posix(relative(root, f));
   }
-  const draftFile = files.find((f) => /\.(qmd|tex)$/i.test(f) && depthOf(f) > 1);
-  const asset = ["assets", "figures", "images", "img", "media"].find((d) => existsSync(join(root, d)));
+  // drafts: Quarto or LaTeX files in a subfolder, else chapter-numbered Markdown (ch01_intro.md)
+  const draftFile = files.find((f) => /\.(qmd|tex)$/i.test(f) && depthOf(f) > 1)
+    ?? files.find((f) => /^ch(apter)?[-_ ]?\d+.*\.md$/i.test(f.split(sep).pop()) && depthOf(f) > 1);
+  // a leading number is ignored, so "04_assets" counts as "assets"
+  const asset = readdirSync(root, { withFileTypes: true }).find((e) => e.isDirectory() && ["assets", "figures", "images", "img", "media"].includes(e.name.toLowerCase().replace(/^\d+[-_ ]/, "")))?.name;
   return {
     status: found.status ?? null, handoff: found.handoff ?? null, decisions: found.decisions ?? null,
     sources: found.sources ?? null, bib: found.bib ?? null, style_guide: found.style_guide ?? null,
     drafts: draftFile ? posix(dirname(relative(root, draftFile))) : null,
     assets: asset ?? null,
     quarto: found.quarto ?? null,
+    visual_ledger: found.visual_ledger ?? null, asset_register: found.asset_register ?? null,
+    boards: found.boards ? posix(dirname(found.boards)) : null,
     agents_md: existsSync(join(root, "AGENTS.md")) ? "AGENTS.md" : null,
     claude_md: existsSync(join(root, "CLAUDE.md")) ? "CLAUDE.md" : null,
     codex_agents: existsSync(join(root, ".codex", "agents")) ? ".codex/agents" : null,
@@ -191,6 +199,7 @@ function detect(root) {
 const ROLE_LABEL = {
   status: "Status", handoff: "Handoff (Stopped at / Next step)", decisions: "Decisions", sources: "Source register",
   bib: "Bibliography", style_guide: "Style guide", drafts: "Drafts", assets: "Assets and figures", quarto: "Quarto config",
+  visual_ledger: "Visual ledger", asset_register: "Asset register", boards: "Excalidraw boards (folder)",
   agents_md: "AGENTS.md (Codex and others)", claude_md: "CLAUDE.md (Claude Code)", codex_agents: "Codex custom agents",
 };
 
