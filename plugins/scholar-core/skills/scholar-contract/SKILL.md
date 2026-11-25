@@ -12,7 +12,8 @@ true, and never let a guess pass as a finding. Detail lives in `references/`: `i
 Tools differ by agent. Where this skill says "ask the owner", use AskUserQuestion in Claude Code and a plain
 question in Codex. The Scholar CLI is `scripts/scholar.mjs` in the `scholar-start` skill folder: in Claude Code
 `${CLAUDE_PLUGIN_ROOT}/skills/scholar-start/scripts/scholar.mjs`, in Codex the `scholar-start/scripts/scholar.mjs`
-next to this skill folder. Called `$SCHOLAR` below (`node $SCHOLAR <command>`).
+next to this skill folder. The session-start hook also prints its absolute path, which skills in the other
+Scholar packs use. Called `$SCHOLAR` below (`node $SCHOLAR <command>`).
 
 ## 1. At session start
 1. Find `scholar/scholar.json` (repo root). It maps each Scholar role (status, handoff, decisions, sources, bib,

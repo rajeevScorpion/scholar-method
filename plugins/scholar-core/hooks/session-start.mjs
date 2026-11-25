@@ -3,6 +3,7 @@
 import { readFileSync, statSync, readdirSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const cut = (s, n = 200) => (s.length > n ? s.slice(0, n - 1) + "..." : s);
 const clean = (s) => s.replace(/\*\*/g, "").replace(/\s+/g, " ").trim();
@@ -53,6 +54,9 @@ try {
     for (const f of (existsSync(idir) ? readdirSync(idir) : []).filter((n) => n.endsWith(".md")))
       if (/^author_decision:\s*pending\s*$/m.test(readFileSync(join(idir, f), "utf8"))) pending++;
     const harvest = count(join(root, "scholar", "harvest", "pending"), (n) => n.endsWith(".md"));
+    // other packs install as separate plugins, so they find the core CLI through this absolute path
+    const cli = fileURLToPath(new URL("../skills/scholar-start/scripts/scholar.mjs", import.meta.url));
+    out.push(`Scholar CLI ($SCHOLAR): node "${cli}"`);
     out.push(`Insights awaiting the scholar's decision: ${pending}. Pending harvest proposals: ${harvest}.`);
     console.log(out.join("\n"));
   }
