@@ -1,8 +1,8 @@
 # Handoff, 2026-11-25
 
-**Stopped at:** 0.1.3 pushed to https://github.com/rajeevScorpion/scholar-method: four packs plus the `scholar` bundle, project-type detection, APA 7 default with style switching and citation conversion, Quarto checks. README is being rewritten in the Studio Method style.
+**Stopped at:** 0.1.3 pushed to https://github.com/rajeevScorpion/scholar-method: four packs plus the `scholar` bundle, project-type detection, APA 7 default with style switching and citation conversion, Quarto checks. README rewritten in the Studio Method style (local commit, not yet pushed).
 
-**In flight:** README rewrite (helper). Nothing else uncommitted.
+**In flight:** nothing. Three local commits await the owner's push approval (README, "check in" alias, handoff).
 
 **Open questions:** auto-migrate an old `profile.citation_style` into `citation`? Should Scholar visuals reuse the thesis `VIS-####` numbering (owner said yes: reuse existing systems).
 
