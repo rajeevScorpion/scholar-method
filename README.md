@@ -48,46 +48,69 @@ language always works.
 
 ## Install
 
+Needs Node 18 or newer for the scripts (no packages to install). `<path-or-git-url>` is a local checkout of this repo
+or its Git URL.
+
 ### Claude Code
 ```
-/plugin marketplace add <path-or-git-url-of-this-repo>
+/plugin marketplace add <path-or-git-url>
 /plugin install scholar-core@scholar-method
+/plugin install scholar-research@scholar-method
+/plugin install scholar-writing@scholar-method
+/plugin install scholar-publish@scholar-method
 ```
-Add `scholar-research`, `scholar-writing` and `scholar-publish` the same way. To update:
-`/plugin marketplace update scholar-method`, then update the pack.
+To test from a local folder, give the path of your checkout as `<path-or-git-url>`.
+Update: `/plugin marketplace update scholar-method`, then update each pack. Uninstall: `/plugin uninstall scholar-core@scholar-method`.
+Skills appear namespaced (`scholar-core:catch-up`) and also load from plain words ("catch up").
 
 ### Codex
-From a checkout of this repo (Node 18 or newer, no packages needed):
+From a checkout of this repo:
 ```
-node install/install.mjs --agent codex --project <your-research-repo>
-node install/install.mjs --agent codex --global
+node install/install.mjs --agent codex --project <your-research-repo>   # skills in <repo>/.agents/skills
+node install/install.mjs --agent codex --global                         # ~/.codex/skills if it exists, else ~/.agents/skills
 ```
-Options: `--packs core,research,writing,publish` (default all), `--dry-run`, `--uninstall`. The installer copies
-skill folders, adds a `.scholar-method.json` marker to each, refuses to overwrite a same-named folder it does not
-own, and prints (does not write) the AGENTS.md snippet that adoption adds. Project skills go to `.agents/skills`;
-global skills go to `~/.codex/skills` if that folder exists, else `~/.agents/skills`.
+Options: `--packs core,research,writing,publish` (default all), `--dry-run`, `--target <dir>`. Update: pull this repo and
+run the same command again (it replaces only folders it owns). Uninstall: add `--uninstall`. The installer marks each
+copy with `.scholar-method.json`, refuses to overwrite a same-named folder it does not own, and prints (does not
+write) the AGENTS.md snippet that adoption adds. Hooks are Claude Code only; in Codex "catch up" does the same job.
 
 ## Start using it
 
 Open your research repo in Claude Code or Codex and say **"scholar start"**, or paste the prompt in
 [ADOPT.md](ADOPT.md). The agent reads your repo, tells you what it understood, asks, and only then adds a small
-visible `scholar/` folder plus a short section in your `AGENTS.md` or `CLAUDE.md`.
+visible `scholar/` folder plus a short section in your `AGENTS.md` or `CLAUDE.md`. Guides: [existing thesis](docs/ADOPTING-AN-EXISTING-THESIS.md),
+[paper](docs/ADOPTING-A-PAPER.md).
 
-Every session after that: **"catch up"** to resume, **"check out"** to close.
+### Everyday words
+- **"scholar start"**: read the repo, say it back, map your files, adopt without overwriting.
+- **"catch up"**: 4 or 5 bullets from your handoff, pending insights and pending harvest proposals.
+- **"I have a hunch that..." / "reflect"**: talk it through; the idea is kept as a provisional insight, never as a finding.
+- **"research X"**, **"evidence"**, **"analyse this data"**, **"visualise"**: find and read sources, map claims to questions,
+  analyse what you supplied, draw evidence-linked charts and networks with a provenance record.
+- **"draft"**, **"voice review"**, **"cite"**, **"build"**, **"submission check"**: writing and publishing support, always on your say.
+- **"check out"**: review the session's insights with you, update status and handoff, validate, commit locally, give a
+  starter line for next time.
+- **"harvest"**: offer reusable lessons to the method. Proposals are privacy-scanned, need your approval, and go to a local
+  branch or a bundle file; nothing is pushed.
+- **"forge"** (maintainers): turn an approved proposal or a workflow into a skill.
+
+A session looks like this: `scholar start` (once), then each day `catch up`, work, `check out`. Next-session line from
+check-out, for example: `catch up, then look at INS-0003; read notes/session_handoff.md first`.
 
 ## Where things live
 
 ```
 your-research-repo/
   scholar/
-    scholar.json      machine config and the map of your existing files
+    scholar.json      machine config, the map of your existing files, writing and harvest settings
     PROJECT_MAP.md    the same map, for people
     insights/ claims/ visuals/ (sources/ only if you have no register)
-    harvest/          proposals for improving the method, kept for your review
+    harvest/          pending proposals and a declined log, kept for your review
   your own status, handoff, registers, drafts, bibliography ...   (untouched)
 ```
 The folder is visible on purpose: some agent search tools skip hidden folders. See
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design and [docs/ROADMAP.md](docs/ROADMAP.md) for what is next.
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design, [docs/validation/RESULTS.md](docs/validation/RESULTS.md) for
+what was tested and what was not, and [docs/ROADMAP.md](docs/ROADMAP.md) for what is next.
 
 ## Studio Method
 
