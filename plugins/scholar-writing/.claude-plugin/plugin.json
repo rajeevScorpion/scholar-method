@@ -1,6 +1,6 @@
 {
   "name": "scholar-writing",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Author-directed writing support: evidence-gated drafting, voice review with a prose linter and fact guard, and citation checks.",
   "author": {
     "name": "Aavriti Design Studio"

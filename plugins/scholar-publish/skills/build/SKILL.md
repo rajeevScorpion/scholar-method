@@ -20,7 +20,14 @@ figures approved). Default: draft. A submission build also needs the `submission
 2. No instructions? `_quarto.yml` (or `.yaml`) means `quarto render` from the repo root. Anything else (LaTeX, a
    Makefile, an npm script, Pandoc): use only what the repo already contains and say what you found. Nothing
    recognisable: stop and ask. Never invent a pipeline, and never install a toolchain without a yes.
-3. Check the tool exists (`quarto --version`). Missing: report it and stop; do not install.
+3. Run `node $SCHOLAR doctor` (add `--json` to read it). Its Quarto line gives the version, Quarto's own Pandoc and PDF
+   readiness: Typst is bundled with Quarto 1.4 and later, so a PDF build needs nothing else unless the project
+   asks for LaTeX (then TinyTeX or another TeX is needed; `quarto list tools` shows TinyTeX).
+4. Quarto missing: stop and ask. Tell the scholar the official route (https://quarto.org/docs/get-started/; on Windows
+   `winget install --id Posit.Quarto`) and that installing is their yes to give. Never install it yourself. Without
+   Quarto, only the preflight and the writing checks can run.
+5. Render targets (`html`, `docx`, `pdf` or `typst`) are whatever the project's `_quarto.yml` or instructions define;
+   pass `--to <format>` only when they say so. Quarto reads `csl:` for the citation style (skill `cite`).
 
 ## 3. Preflight (report, do not fix)
 Run these in order, from the repo root, and keep the output:
@@ -28,6 +35,9 @@ Run these in order, from the repo root, and keep the output:
    - `[GAP: ...]` markers in the manuscript (warn in a draft build, error with `--submission`);
    - every figure that has a sidecar in `scholar/visuals` is `approved` or `manuscript-ready` (warn otherwise);
      figures with no sidecar are advisory (concept sketches and untracked images: confirm rights and approval);
+   - citation style: a bibliography with no `csl:` (Pandoc then falls back to Chicago author-date, not APA 7), a
+     `csl:` file that is missing, or one that differs from `citation.style` in `scholar.json` (all warn; fix them
+     with `style.mjs` of the `cite` skill, never by hand-editing a style);
    - the detected build command, and where the writing-pack scripts below live. It prints their exact commands
      under "run first".
 2. The two commands it prints: `lint-prose.mjs <manuscript files>` (skill `voice-review`) and

@@ -33,7 +33,7 @@ bundle-exported, `branch harvest/<id> (local, not pushed)`, submitted, merged). 
 `scholar/harvest/declined.md`: `- date | id | title | reason`.
 
 ## scholar.json
-`method_version`, `project` (`kind`: null until the scholar confirms, then thesis|journal-paper|conference-paper|article|review|book|proposal|other; `kind_source`: `detected-confirmed` or `owner-defined`; optional `description` in the scholar's own words; never written from detection alone), `profile` (`citation_style`, `writing_profile`: a profile name such as
+`method_version`, `project` (`kind`: null until the scholar confirms, then thesis|journal-paper|conference-paper|article|review|book|proposal|other; `kind_source`: `detected-confirmed` or `owner-defined`; optional `description` in the scholar's own words; never written from detection alone), `citation` (below), `profile` (`writing_profile`: a profile name such as
 `indian-academic-english`, a repo-relative path, or null; the only place a writing profile is selected),
 `paths` (status, handoff, decisions, sources, bib, style_guide, drafts, assets, quarto, visual_ledger, asset_register,
 boards, agents_md, claude_md, codex_agents; each a repo-relative path or null), `capture` (`batch|ask|off`), `harvest_outbox` (`tracked|ignored`),
@@ -42,6 +42,19 @@ default none; `deny_terms`: words that must never appear in a proposal, such as 
 at adoption), `related_projects` (empty unless the scholar opts in, naming each project), `external_ids` (IDs or citekeys that
 live outside `scholar/`, for example the project's own register IDs; `init` fills it from IDs found in the mapped source register and visual ledger). Citekeys found in the mapped `.bib` file also
 count as known.
+
+### `citation` (style of in-text citations and the reference list)
+New projects get the default below. Citations are written once as Pandoc citekeys; the style is the `csl:` file in the
+project's Quarto or Pandoc config, so a style change swaps that file and never rewrites the text. Precedence: venue or
+institution rules, then a decision the scholar recorded (with date and source, in the decisions file), then APA 7.
+```json
+"citation": {"style": "apa-7", "csl": null}
+```
+`style` is `apa-7`, `mla-9`, `chicago-author-date`, `chicago-notes`, `harvard`, `ieee`, `vancouver` or `custom` (the
+official CSL file names are in the `cite` skill's `references/styles.md`). `csl` is null until a CSL file is set up in
+the project, then the repo-relative path (`style.mjs use` writes both); `custom` needs it. `validate` checks the types
+and warns on an unknown style id. Older projects may carry only `profile.citation_style` (free text); `citation.style`
+wins when both exist. `style.mjs status` and the build preflight warn when no `csl:` is configured or it disagrees.
 
 ### `writing` (prose lint rules)
 New projects get these defaults. They apply whether or not a writing profile is selected: a project turns a rule

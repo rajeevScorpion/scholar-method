@@ -18,5 +18,8 @@ for every kind. A project that yields several outputs (a thesis and papers from 
 | proposal | Funder criteria; aims; whether a budget is in scope (default no) | Call text, aims, review criteria | Funder criteria as the authority in decisions | Eligibility and page rules; budget only if asked |
 | other | The scholar's own description, in their words | Whatever the scholar names | Minimal `scholar/` folder, description stored as `project.description` | Integrity rules unchanged |
 
+Citation style, every kind: ask once, default APA 7 (`citation.style` in `scholar.json`); the venue's or institution's rules win.
+Set it with `style.mjs use` of the `cite` skill and record the decision.
+
 Defaults for a new (near-empty) project: ask the kind directly with the options above plus "Something else, I will
 describe it", then the row's questions, then create only what the scholar wants.

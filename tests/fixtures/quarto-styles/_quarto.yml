@@ -1,0 +1,5 @@
+project:
+  title: "Synthetic citation styles fixture"
+bibliography: refs.bib
+format:
+  html: default

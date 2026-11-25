@@ -97,6 +97,37 @@ Guides: [existing thesis](docs/ADOPTING-AN-EXISTING-THESIS.md),
 A session looks like this: `scholar start` (once), then each day `catch up`, work, `check out`. Next-session line from
 check-out, for example: `catch up, then look at INS-0003; read notes/session_handoff.md first`.
 
+## Citation styles
+
+Write citations once, as Pandoc citekeys (`[@key, p. 12]`, `@key`) with sources in a `.bib` or CSL-JSON file. The style is
+a setting, the `csl:` file in your Quarto or Pandoc config, so changing style means swapping that file, not retyping
+the text. **APA 7 is the default**; a journal's or university's rules win, then a decision you record, then APA 7.
+`apa.csl` is bundled; MLA 9, Chicago, Harvard, IEEE, Vancouver (NLM) or any CSL file you supply are fetched on demand,
+only with your yes. Without a `csl:` Pandoc would fall back to Chicago author-date, so `status` and the build
+preflight warn when none is set.
+
+```
+node plugins/scholar-writing/skills/cite/scripts/style.mjs status --root .
+node plugins/scholar-writing/skills/cite/scripts/style.mjs use mla-9 --root .            # plan only
+node plugins/scholar-writing/skills/cite/scripts/style.mjs use mla-9 --root . --apply    # do it
+node plugins/scholar-writing/skills/cite/scripts/style.mjs fields mla-9 --root .         # missing bib fields for that style
+node plugins/scholar-writing/skills/cite/scripts/style.mjs convert --root .              # propose citekeys for typed "(Smith, 2020)"
+```
+
+`convert --apply` rewrites only exact matches and leaves ambiguous or unmatched ones for you; `narrative` lists wording
+that depends on the style. See [the cite skill](plugins/scholar-writing/skills/cite/SKILL.md) and
+[its style notes](plugins/scholar-writing/skills/cite/references/styles.md).
+
+## Quarto
+
+Builds use your project's own Quarto setup. `node plugins/scholar-core/skills/scholar-start/scripts/scholar.mjs doctor`
+reports the Quarto version, its Pandoc and whether PDF output is ready (Typst is bundled with Quarto 1.4 and later;
+TinyTeX is only needed for LaTeX). If Quarto is missing, the doctor prints the official route
+(https://quarto.org/docs/get-started/; Windows: `winget install --id Posit.Quarto`) and the agent asks you first;
+nothing is ever installed for you. Real render tests (HTML, DOCX and a Typst PDF under APA and a numeric style) run
+when Quarto is installed and skip with a message when it is not; results are in
+[docs/validation/RESULTS.md](docs/validation/RESULTS.md).
+
 ## Where things live
 
 ```

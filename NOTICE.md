@@ -28,3 +28,12 @@ helper agents and usage percentages.
 ## Third-party tools
 `blader/humanizer` (https://github.com/blader/humanizer) is an optional external editing skill. Scholar Method does
 not include, copy or install it; it only detects it and asks first.
+
+## Citation styles (CSL)
+`plugins/scholar-writing/skills/cite/references/csl/apa.csl` (APA Style 7th edition) is copied unmodified from the
+Citation Style Language styles repository (https://github.com/citation-style-language/styles) at commit
+`f123868a546e6e7cec10e808ae04ef0e52bf2210`. It is licensed under Creative Commons Attribution-ShareAlike 3.0 (authors
+Brenton M. Wiernik and Andrew Dunning, contributor Jay Pfaffman); that licence applies to the file, not to the rest of
+this repository. `tests/fixtures/quarto-styles/csl/ieee.csl` (IEEE, same commit, same licence) is a test fixture only.
+Other styles are downloaded on demand by `style.mjs fetch` from the same repository and commit, only after the scholar
+agrees; each keeps its own licence.

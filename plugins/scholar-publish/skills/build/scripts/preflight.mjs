@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Build preflight. Report-only, zero dependencies, imports nothing from other skills. It never builds anything.
 // Usage: node preflight.mjs --root <repo> [--submission] [--json] [--strict] [files...]
-// Checks: [GAP: ...] markers left in the manuscript (error with --submission, else warn); figures that have a VIS
+// Checks: a CSL is configured and matches citation.style (warn); [GAP: ...] markers left in the manuscript (error with --submission, else warn); figures that have a VIS
 // sidecar but are not approved or manuscript-ready (warn); figures with no sidecar (advisory); the project's build
 // command as detected; whether the lint and citation scripts of scholar-writing are findable (and the commands to run).
 // Exit code: 0, or 1 with --strict when any error or warn exists.
@@ -67,6 +67,23 @@ for (const file of targets) {
     if (r.vis && !hit) add(rel(file), line(r.o), "figure-sidecar-missing", "warn", `${r.vis} is mentioned but has no sidecar in scholar/visuals`);
     else if (!hit) add(rel(file), line(r.o), "figure-no-sidecar", "advisory", `${r.path} has no VIS sidecar (fine for a concept sketch or untracked image; confirm rights and approval)`);
     else if (!OK.includes(hit.status)) add(rel(file), line(r.o), "figure-not-approved", "warn", `${hit.id} (${r.vis ?? r.path}) is "${hit.status}", not approved or manuscript-ready`);
+  }
+}
+
+// ---------- citation style: is a CSL configured, and does it match citation.style? ----------
+// Same style ids as cite/scripts/style.mjs (no imports across skills). With no csl: Pandoc falls back to Chicago author-date.
+const CSL_STYLE = { apa: "apa-7", "modern-language-association": "mla-9", "chicago-author-date": "chicago-author-date", "chicago-notes-bibliography": "chicago-notes", "harvard-cite-them-right": "harvard", ieee: "ieee", "nlm-citation-sequence": "vancouver" };
+{
+  const yml = ["_quarto.yml", "_quarto.yaml"].map((n) => join(root, n)).find(existsSync);
+  const sources = [...(yml ? [{ file: yml, text: readFileSync(yml, "utf8") }] : []), ...targets.filter(existsSync).map((f) => ({ file: f, text: readFileSync(f, "utf8").replace(/\r\n/g, "\n").match(/^---\n([\s\S]*?)\n---/)?.[1] ?? "" }))];
+  const hasBib = sources.some((x) => /^[ \t]*bibliography:/m.test(x.text));
+  const csls = sources.flatMap((x) => [...x.text.matchAll(/^[ \t]*csl:[ \t]*["']?([^"'\s#]+)/gm)].map((m) => ({ file: x.file, value: m[1] })));
+  const want = cfg?.citation?.style ?? "apa-7";
+  if (hasBib && !csls.length) add(rel(yml ?? targets[0] ?? root), 0, "no-csl", "warn", "a bibliography is set but no csl: is: Pandoc falls back to Chicago author-date, which is not " + (want === "apa-7" ? "APA 7" : want) + ". Run style.mjs use " + want + " (skill cite)");
+  for (const c of csls) {
+    const got = CSL_STYLE[c.value.split(/[\/]/).pop().replace(/\.csl$/i, "")] ?? "custom";
+    if (got !== want) add(rel(c.file), 0, "csl-mismatch", "warn", c.value + " is " + got + " but citation.style is " + want + ": change one of them on purpose (venue rules win) and record the decision");
+    if (!/^https?:/.test(c.value) && !existsSync(resolve(c.file === yml ? root : dirname(c.file), c.value))) add(rel(c.file), 0, "csl-missing-file", "warn", "csl file " + c.value + " does not exist");
   }
 }
 

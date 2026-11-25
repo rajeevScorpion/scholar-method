@@ -65,3 +65,8 @@ export function methodCheckout() {
   return dir;
 }
 export const gitOut = (dir, ...a) => execFileSync("git", a, { cwd: dir }).toString().trim();
+
+export const STYLE = join(REPO, "plugins/scholar-writing/skills/cite/scripts/style.mjs");
+export const BUNDLED_APA = join(REPO, "plugins/scholar-writing/skills/cite/references/csl/apa.csl");
+export const st = (dir, ...a) => run(STYLE, [...a, "--root", dir]);
+export const hasQuarto = spawnSync("quarto", ["--version"], { encoding: "utf8" }).status === 0;

@@ -256,3 +256,21 @@ test("validate rejects a bad project kind", () => {
   assert.equal(r.code, 1);
   assert.match(r.out, /project\.kind is "memoir"/);
 });
+
+test("init writes citation defaults (APA 7, no csl yet); validate type-checks citation", () => {
+  const dir = adopted();
+  const cfg = cfgOf(dir);
+  assert.deepEqual(cfg.citation, { style: "apa-7", csl: null });
+  assert.equal(cfg.profile.citation_style, undefined);
+  assert.equal(sch(dir, "validate").code, 0);
+  const p = join(dir, "scholar/scholar.json");
+  writeFileSync(p, JSON.stringify({ ...cfg, citation: { style: "nature-2099", csl: 3 } }));
+  const v = sch(dir, "validate");
+  assert.equal(v.code, 1);
+  assert.match(v.out, /WARN .*citation\.style "nature-2099" is not a known style id/);
+  assert.match(v.out, /citation\.csl must be null or a path string/);
+  writeFileSync(p, JSON.stringify({ ...cfg, citation: { style: "custom", csl: null } }));
+  assert.match(sch(dir, "validate").out, /WARN .*"custom" but citation\.csl names no file/);
+  writeFileSync(p, JSON.stringify({ ...cfg, citation: "apa" }));
+  assert.match(sch(dir, "validate").out, /"citation" must be an object/);
+});

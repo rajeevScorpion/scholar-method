@@ -55,3 +55,18 @@ test("example 04: preflight flags the GAP and nothing else", () => {
   assert.equal(r.code, 1);
   assert.deepEqual(JSON.parse(r.out).findings.map((f) => f.rule), ["gap-marker"]);
 });
+
+test("preflight warns when a bibliography has no csl, or the csl differs from citation.style", () => {
+  const run1 = (yml, cfg) => {
+    const dir = tmp("pre-");
+    writeFileSync(join(dir, "ms.qmd"), "Text.\n");
+    writeFileSync(join(dir, "_quarto.yml"), yml);
+    if (cfg) { mkdirSync(join(dir, "scholar"), { recursive: true }); writeFileSync(join(dir, "scholar/scholar.json"), JSON.stringify(cfg)); }
+    return JSON.parse(run(PRE, ["--root", dir, "--json", join(dir, "ms.qmd")]).out).findings.map((f) => f.rule);
+  };
+  assert.ok(run1("bibliography: refs.bib\n").includes("no-csl"));
+  assert.ok(!run1("project:\n  type: manuscript\n").includes("no-csl")); // no bibliography, nothing to style
+  assert.deepEqual(run1("bibliography: refs.bib\ncsl: csl/apa.csl\n", { citation: { style: "apa-7", csl: null } }).filter((r) => r.startsWith("csl")), ["csl-missing-file"]);
+  assert.ok(run1("bibliography: refs.bib\ncsl: csl/ieee.csl\n", { citation: { style: "apa-7", csl: null } }).includes("csl-mismatch"));
+  assert.ok(!run1("bibliography: refs.bib\ncsl: csl/ieee.csl\n", { citation: { style: "ieee", csl: "csl/ieee.csl" } }).includes("csl-mismatch"));
+});

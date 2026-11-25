@@ -43,6 +43,28 @@ synthetic fixtures copied to temp folders. "Pass" means the command exited 0 on 
 | Harvest 5: no upstream permission | promote stays local, no remote, no push call in the script; the bundle route | pass |
 | Harvest 6: a fresh session on another agent | clone from committed files; hook and `status` show the pending proposal and the pending hypothesis | pass |
 
+## Citation styles and Quarto (0.1.3)
+Run on 2026-11-25, Windows 11, Node 22.17.0, Quarto 1.10.18 (Pandoc 3.10, Typst 0.15.1 bundled; TinyTeX not installed).
+Fixture: `tests/fixtures/quarto-styles` (invented authors and sources, no DOIs). Each render test copies it to a temp
+folder, switches the style with `style.mjs use ... --apply`, renders, asserts on the output text and removes the folder.
+| Check | Command | Result |
+|---|---|---|
+| Whole suite | `node --test` | pass, 102 tests, 0 failed, 1 skipped (the network test, unless `SCHOLAR_NET_TESTS=1`) |
+| Marketplace and four packs | `claude plugin validate .` and `claude plugin validate plugins/<pack>` | pass |
+| APA 7 render, HTML | `quarto render index.qmd --to html` after `use apa-7 --apply` (bundled `apa.csl`) | pass: "(Verma, 2019, p. 14)", "Okafor (2021)", "(Lindqvist & Rao, 2020)", "(Baker et al., 2018; Verma, 2019)", APA reference list |
+| APA 7 render, DOCX | same, `--to docx`, text read from `word/document.xml` | pass, same in-text forms and reference entries |
+| Numeric style render, HTML and DOCX | `use csl/ieee.csl --apply` (IEEE vendored in the fixture), `--to html` and `--to docx` | pass: "[1, p. 14]", "[1], [4]", numbered reference list; the `.qmd` source is byte-identical before and after the switch |
+| Convert, then render | typed "(Verma, 2019, p. 14)" and two more patterns, `convert --apply`, render under APA | pass: rendered text equals the original typed text |
+| PDF via Typst | `quarto render index.qmd --to typst -M keep-typ:true` | pass: a valid PDF (`%PDF-` header); the `.typ` source carries `#set bibliography(style: "csl/apa.csl")`. The PDF's inner text was not extracted, so the citation text is checked in HTML and DOCX only |
+| Doctor with Quarto | `scholar.mjs doctor --json` | pass: version, Pandoc, Typst, `pdf_ready` true via Typst |
+| Doctor without Quarto | `SCHOLAR_QUARTO=<missing>` | pass: `present: false`, install route printed, nothing installed |
+| Render tests with no Quarto on PATH | `node --test tests/quarto-render.test.mjs` with a PATH holding only Node and system tools | 5 skipped with the message "quarto is not on PATH: install it from https://quarto.org/docs/get-started/ ...", the missing-Quarto doctor test passes |
+| Download from the pinned commit | `SCHOLAR_NET_TESTS=1 node --test tests/citation-style.test.mjs` (`use mla-9 --apply`) | pass: `modern-language-association.csl` fetched at `f123868a546e6e7cec10e808ae04ef0e52bf2210`, `csl:` set |
+| `style.mjs` unit tests | `tests/citation-style.test.mjs` (15 tests) | pass: status warning with no CSL, dry runs write nothing, minimal `_quarto.yml` edits (LF and CRLF, comments kept), per-style `fields`, `convert` proposals and apply rules, numeric mapping, `narrative` flags |
+
+Not verified: the other styles (MLA, Chicago, Harvard, Vancouver) were not rendered, only fetched in one case (MLA);
+LaTeX PDF output (TinyTeX is not installed here); the exact wording of each CSL against the printed manuals.
+
 ## Limitations
 - **Real Codex run not done.** The local Codex CLI is 0.29.0 and its global config fails to load with it (an unknown
   `model_reasoning_effort` value, an MCP server entry without `command`); after overriding those on the command line the

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.3 (2026-11-25)
+- Citation styles: APA 7 is the default; the style is the `csl:` setting, so switching style never rewrites the text.
+  `scholar.json` gains `citation: {style, csl}` (new projects get `apa-7`; `validate` checks it; `profile.citation_style`
+  is no longer written). New `cite/scripts/style.mjs`: `status`, `use` (dry run unless `--apply`), `fetch`, `fields`
+  (per-style bib completeness), `convert` (hand-typed author-date and numeric citations to Pandoc citekeys, applies only
+  exact matches, backup diff) and `narrative` (style-dependent wording, report only). Bundled `apa.csl` (CC BY-SA 3.0,
+  pinned commit `f123868`); other styles are fetched on demand with the scholar's yes. `vancouver` maps to
+  `nlm-citation-sequence`, the official repository's Vancouver style.
+- Quarto: `scholar.mjs doctor` reports Quarto, its Pandoc, Typst and TinyTeX, PDF readiness, and the official install
+  route when Quarto is missing (it never installs). `build` runs the doctor first. The build preflight warns when a
+  bibliography has no CSL, the CSL file is missing, or it differs from `citation.style`.
+- Tests: style helper tests, and real Quarto render tests (HTML, DOCX, Typst PDF; APA and IEEE) that skip with a message
+  when Quarto is not installed. `SCHOLAR_NET_TESTS=1` adds a download test.
+- scholar-core, scholar-writing, scholar-publish and the `scholar` bundle move to 0.1.3.
+
 ## 0.1.2 (2026-11-25)
 - Project-type detection: after the first read, `scholar-start` says what it seems you are working on (thesis, journal or
   conference paper, article, review, book, proposal, other), asks you to confirm, correct or define it, then takes it ahead

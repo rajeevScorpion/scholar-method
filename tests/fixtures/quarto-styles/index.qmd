@@ -1,0 +1,8 @@
+---
+title: "Synthetic fixture"
+---
+
+A page citation [@verma2019, p. 14]. A narrative citation: @okafor2021 describes the method.
+Two authors [@lindqvist2020]. A group of sources [@baker2018; @verma2019].
+
+## References

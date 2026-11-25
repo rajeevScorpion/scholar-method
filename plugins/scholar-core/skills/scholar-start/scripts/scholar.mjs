@@ -2,11 +2,11 @@
 // Scholar Method CLI: init, detect, doctor, validate, new, status. Zero dependencies; imports nothing from other skills.
 // Usage: node scholar.mjs <init|detect|doctor|validate|new|status> [options]   (run with no arguments for help)
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, readSync, readdirSync, writeFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { dirname, join, relative, resolve, sep } from "node:path";
 
-const VERSION = "0.1.2"; // keep equal to plugins/scholar-core/.claude-plugin/plugin.json (a test checks)
+const VERSION = "0.1.3"; // keep equal to plugins/scholar-core/.claude-plugin/plugin.json (a test checks)
 
 // ---------- schema (documented in scholar-contract/references/records.md) ----------
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -58,6 +58,8 @@ const KINDS = ["thesis", "journal-paper", "conference-paper", "article", "review
 const KIND_SOURCES = ["detected-confirmed", "owner-defined"];
 // defaults for the `writing` object (lint rules; the writing profile itself is opt-in via profile.writing_profile)
 const WRITING_DEFAULTS = { no_dashes: true, no_oxford_comma: true, serial_comma: false, spelling: "indian", no_contractions: true, ai_register: true, protected_terms: [] };
+// citation.style ids (the CSL file for each lives in scholar-writing's cite skill: scripts/style.mjs); "custom" means citation.csl names a file
+const CITATION_STYLES = ["apa-7", "mla-9", "chicago-author-date", "chicago-notes", "harvard", "ieee", "vancouver", "custom"];
 const WRITING_TYPES = { no_dashes: "boolean", no_oxford_comma: "boolean", serial_comma: "boolean", spelling: "string", no_contractions: "boolean", ai_register: "boolean", protected_terms: "array" };
 
 // ---------- small helpers ----------
@@ -315,7 +317,8 @@ function planInit(root, project) {
   if (!existing) {
     cfg = {
       method_version: VERSION,
-      profile: { citation_style: "APA 7", writing_profile: null },
+      profile: { writing_profile: null },
+      citation: { style: "apa-7", csl: null }, // APA 7 unless the venue or institution says otherwise; csl null = the style's default file
       project: project ?? { kind: null, kind_source: null }, // only ever what the scholar confirmed
       paths,
       writing: WRITING_DEFAULTS,
@@ -372,6 +375,21 @@ function cmdInit(opt) {
 }
 
 // ---------- doctor ----------
+// Quarto and PDF readiness. SCHOLAR_QUARTO overrides the command name (tests, or a Quarto that is not on PATH). Never installs.
+function quartoInfo() {
+  const cmd = process.env.SCHOLAR_QUARTO ?? "quarto";
+  const run = (a) => { const r = spawnSync(cmd, a, { encoding: "utf8", timeout: 30000 }); return r.status === 0 ? (r.stdout || r.stderr || "").trim() : null; };
+  const install = { docs: "https://quarto.org/docs/get-started/", windows: "winget install --id Posit.Quarto", note: "Installing needs the scholar's yes; Scholar never installs it." };
+  const version = run(["--version"]);
+  if (!version) return { present: false, version: null, pandoc: null, typst: null, tinytex: null, pdf_ready: false, install };
+  const typst = run(["typst", "--version"]); // bundled with Quarto 1.4 and later
+  const tools = (run(["list", "tools"]) ?? "").replace(/\x1b\[[0-9;?]*[A-Za-z]/g, "");
+  const tt = tools.match(/tinytex\s+(Not installed|Installed)\s+(\S+)/i);
+  const tinytex = tt ? (/^not/i.test(tt[1]) ? null : tt[2]) : null;
+  const first = (s) => s?.split("\n")[0] ?? null;
+  return { present: true, version, pandoc: first(run(["pandoc", "--version"])), typst: first(typst), tinytex, pdf_ready: !!(typst || tinytex), install: null };
+}
+
 function lockSaysBlader(lockPaths) {
   for (const p of lockPaths) {
     const j = readJson(p);
@@ -387,6 +405,7 @@ function cmdDoctor(opt) {
   if (cfg) out.scholar = { initialised: true, method_version: cfg.method_version ?? null };
   out.project = cfg?.project ?? null;
   out.detected = detectKind(root);
+  out.quarto = quartoInfo();
 
   const ipPath = join(home, ".claude", "plugins", "installed_plugins.json");
   const ip = readJson(ipPath);
@@ -431,6 +450,8 @@ function cmdDoctor(opt) {
   console.log(`Scholar doctor (${root})`);
   console.log(`  scholar/ adopted: ${out.scholar.initialised ? "yes, method " + out.scholar.method_version : "no"}`);
   console.log(`  project kind: ${out.project?.kind ? `${out.project.kind} (${out.project.kind_source})` : "not confirmed yet"}. ${kindLine(out.detected)}`);
+  const qi = out.quarto;
+  console.log(qi.present ? `  Quarto ${qi.version} (${qi.pandoc ?? "Pandoc unknown"}; ${qi.typst ? qi.typst + " bundled" : "no Typst"}; TinyTeX ${qi.tinytex ?? "not installed"}). PDF: ${qi.pdf_ready ? "ready" + (qi.typst ? " via Typst" : " via TinyTeX") : "not ready"}.` : `  Quarto: not found. Official install: ${qi.install.docs} (Windows: ${qi.install.windows}). ${qi.install.note}`);
   console.log(`  Claude plugins file: ${out.claude.installed_plugins_file ?? "not found"}; scholar plugins: ${out.claude.scholar_plugins.join(", ") || "none"}`);
   console.log(`  Codex skills dirs: ${out.codex.skills_dirs.filter((d) => d.exists).map((d) => d.path).join(", ") || "none exist"}`);
   console.log(`  Studio Method studio-core in Claude: ${out.studio_core.installed_in_claude ? "installed" + (out.studio_core.disabled_in_this_project ? ", disabled in this project" : ", enabled here") : "not installed"}`);
@@ -462,6 +483,17 @@ function validateAll(root) {
       const want = WRITING_TYPES[k];
       if (!want) issues.push({ level: "WARN", path: at, msg: `unknown writing key "${k}"` });
       else if (want === "array" ? !Array.isArray(v) : typeof v !== want) issues.push({ level: "ERROR", path: at, msg: `writing.${k} must be ${want === "array" ? "an array" : "a " + want}` });
+    }
+  }
+  const ci = cfg?.citation;
+  if (ci !== undefined) {
+    const at = "scholar/scholar.json";
+    if (typeof ci !== "object" || ci === null || Array.isArray(ci)) issues.push({ level: "ERROR", path: at, msg: '"citation" must be an object' });
+    else {
+      if (typeof ci.style !== "string" || !ci.style) issues.push({ level: "ERROR", path: at, msg: `citation.style must be a string, one of ${CITATION_STYLES.join(", ")}` });
+      else if (!CITATION_STYLES.includes(ci.style)) issues.push({ level: "WARN", path: at, msg: `citation.style "${ci.style}" is not a known style id (${CITATION_STYLES.join(", ")})` });
+      if (ci.csl != null && typeof ci.csl !== "string") issues.push({ level: "ERROR", path: at, msg: "citation.csl must be null or a path string" });
+      if (ci.style === "custom" && !ci.csl) issues.push({ level: "WARN", path: at, msg: 'citation.style is "custom" but citation.csl names no file' });
     }
   }
   const pj = cfg?.project;

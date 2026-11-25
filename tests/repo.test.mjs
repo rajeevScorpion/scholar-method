@@ -16,7 +16,7 @@ test("marketplace and plugin versions agree, four packs exist", () => {
     assert.equal(pj.version, p.version, `${p.name} version mismatch`);
     assert.equal(p.source, `./plugins/${p.name}`);
   }
-  assert.equal(mk.metadata.version, "0.1.2");
+  assert.equal(mk.metadata.version, "0.1.3");
 });
 
 test("scholar.mjs VERSION equals the scholar-core version", () => {
@@ -73,4 +73,16 @@ test("no em dashes in docs and skills", () => {
     }
   })(REPO);
   assert.deepEqual(bad, []);
+});
+
+test("the bundled APA 7 CSL is pinned, licensed and recorded in NOTICE", () => {
+  const dir = join("plugins/scholar-writing/skills/cite/references/csl");
+  const csl = readFileSync(join(REPO, dir, "apa.csl"), "utf8");
+  assert.match(csl, /<title>APA Style 7th edition<\/title>/);
+  assert.match(csl, /creativecommons\.org\/licenses\/by-sa\/3\.0/);
+  const pin = readFileSync(join(REPO, dir, "README.md"), "utf8").match(/commit\s+`([0-9a-f]{40})`/)[1];
+  assert.match(readFileSync(join(REPO, "NOTICE.md"), "utf8"), new RegExp(pin));
+  const style = readFileSync(join(REPO, "plugins/scholar-writing/skills/cite/scripts/style.mjs"), "utf8");
+  assert.ok(style.includes(`const PIN = "${pin}"`), "style.mjs fetches a different commit than the one recorded");
+  assert.deepEqual(readdirSync(join(REPO, dir)).sort(), ["README.md", "apa.csl"]); // no other style is bundled
 });
