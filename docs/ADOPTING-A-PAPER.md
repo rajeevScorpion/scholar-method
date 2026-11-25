@@ -13,7 +13,8 @@ fewer roles, its own records.
 1. Install the skills (README), open the paper repo, say "scholar start". The agent reads first and changes nothing.
 2. Confirm in the read-back: the research question, target venue (if known), stage, working citation style, which
    sources are verified, the draft and its history, what is approved, and any reuse from earlier work.
-3. For a new paper, `init --apply --kind paper` creates `scholar/STATUS.md`, `HANDOFF.md`, `DECISIONS.md` and a
+3. The agent says what it seems to be (journal paper, conference paper, review, article or something else) and you
+   confirm or correct it; only then is `project.kind` recorded. For a new paper, `init --apply --kind journal-paper` creates `scholar/STATUS.md`, `HANDOFF.md`, `DECISIONS.md` and a
    sources folder, because there are none to map. For an existing draft repo it maps what is there first.
 4. Record the venue in `scholar/DECISIONS.md` with its source, and set `writing` keys in `scholar/scholar.json` if the
    venue needs US spelling or the serial comma (add a decisions line too).

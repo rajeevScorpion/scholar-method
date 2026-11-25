@@ -76,7 +76,9 @@ write) the AGENTS.md snippet that adoption adds. Hooks are Claude Code only; in 
 
 Open your research repo in Claude Code or Codex and say **"scholar start"**, or paste the prompt in
 [ADOPT.md](ADOPT.md). The agent reads your repo, tells you what it understood, asks, and only then adds a small
-visible `scholar/` folder plus a short section in your `AGENTS.md` or `CLAUDE.md`. Guides: [existing thesis](docs/ADOPTING-AN-EXISTING-THESIS.md),
+visible `scholar/` folder plus a short section in your `AGENTS.md` or `CLAUDE.md`. On the first run it also tells you what it found, for example "it seems you are working on a thesis", and asks you to
+confirm, correct or describe the project; only your answer is recorded, and the next steps follow the kind you confirm.
+Guides: [existing thesis](docs/ADOPTING-AN-EXISTING-THESIS.md),
 [paper](docs/ADOPTING-A-PAPER.md).
 
 ### Everyday words

@@ -15,7 +15,9 @@ any agent or session protocol. Where Scholar and your repo disagree, your repo w
    It prints which of your files it would map to each role (status, handoff, decisions, sources, bibliography, style
    guide, drafts, assets, visual ledger, Excalidraw boards, Quarto config, AGENTS.md, Codex agents) and the few files it
    would add under `scholar/`. Check `git status` before and after if you want proof; it must not change.
-3. **Read-back.** The agent tells you, in 25 lines or fewer, what it understood, what is approved versus open, what is
+3. **Name the project.** The agent says "it seems you are working on a thesis" with its reasons (read-only; try
+   `scholar.mjs detect --root <repo>`). You confirm, correct or describe it; nothing is recorded before that.
+4. **Read-back.** The agent tells you, in 25 lines or fewer, what it understood, what is approved versus open, what is
    verified versus reported, your uncommitted work, and any stale or conflicting records. Correct it.
 4. **Reconcile on your terms.** Old chapter counts, two status files, a handoff that lags behind the state doc: these
    are your tasks. Scholar lists them and never rewrites the study to fix them.

@@ -33,7 +33,7 @@ bundle-exported, `branch harvest/<id> (local, not pushed)`, submitted, merged). 
 `scholar/harvest/declined.md`: `- date | id | title | reason`.
 
 ## scholar.json
-`method_version`, `profile` (`kind` thesis|paper|review|unset, `citation_style`, `writing_profile`: a profile name such as
+`method_version`, `project` (`kind`: null until the scholar confirms, then thesis|journal-paper|conference-paper|article|review|book|proposal|other; `kind_source`: `detected-confirmed` or `owner-defined`; optional `description` in the scholar's own words; never written from detection alone), `profile` (`citation_style`, `writing_profile`: a profile name such as
 `indian-academic-english`, a repo-relative path, or null; the only place a writing profile is selected),
 `paths` (status, handoff, decisions, sources, bib, style_guide, drafts, assets, quarto, visual_ledger, asset_register,
 boards, agents_md, claude_md, codex_agents; each a repo-relative path or null), `capture` (`batch|ask|off`), `harvest_outbox` (`tracked|ignored`),

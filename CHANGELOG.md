@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.2 (2026-11-25)
+- Project-type detection: after the first read, `scholar-start` says what it seems you are working on (thesis, journal or
+  conference paper, article, review, book, proposal, other), asks you to confirm, correct or define it, then takes it ahead
+  by kind (`references/project-kinds.md`). `scholar.mjs detect [--json]`; detection also appears in `init --dry-run` and
+  `doctor --json`.
+- `init --apply --kind <kind> [--describe "..."]` records `project.kind` and `kind_source` in `scholar.json`; without
+  `--kind` it stays null. A confirmed kind is never overwritten. `--kind paper` still works (stored as `journal-paper`).
+  `validate` type-checks `project`. `profile.kind` is gone from new configs.
+- `catch-up` names the confirmed kind. scholar-core and the `scholar` bundle move to 0.1.2.
+
 ## 0.1.1 (2026-11-25)
 - New `scholar` bundle plugin: `/plugin install scholar@scholar-method` installs all four packs through plugin
   dependencies (tested on Claude Code 2.1.318).

@@ -11,14 +11,14 @@ Ask means AskUserQuestion in Claude Code, a plain question in Codex. `$SCHOLAR` 
 `scholar-start/scripts/scholar.mjs` beside this skill folder). Load `scholar-contract` if it is not loaded yet.
 
 ## 1. Read (only what is needed)
-1. `scholar/scholar.json` for the role map. No `scholar/`? Say so in one line and offer `scholar-start`; stop.
+1. `scholar/scholar.json` for the role map and `project.kind`. No `scholar/`? Say so in one line and offer `scholar-start`; stop.
 2. The mapped handoff ("Stopped at", "Next step"), then the mapped status doc (summary, open, next only).
 3. `node $SCHOLAR status`: insights awaiting decision, claims and sources by state, pending harvest count.
 4. `git log --oneline -5` and `git status --short` for work in flight. Uncommitted changes are the scholar's.
 5. Do not read manuscripts or sources. Do not explore further.
 
 ## 2. Reply: 4 to 5 bullets, plain words
-- **Last session:** what was happening and where it stopped (with the date if known).
+- **Last session:** the confirmed project kind from `scholar/scholar.json` `project.kind` (if null, say it is not confirmed yet), then what was happening and where it stopped (with the date if known).
 - **In flight:** unfinished task, branch or uncommitted files (or "nothing").
 - **Waiting on you:** insights pending decision (IDs and titles, at most three), pending harvest proposals.
 - **Open loose ends:** one or two from the status or handoff, including any reconciliation tasks.

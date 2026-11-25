@@ -1,6 +1,6 @@
 ---
 name: scholar-start
-description: Start a new research project with Scholar Method, or bring an existing thesis, paper or review repo into it without replacing anything. Understand-first, so it reads the repo (instructions, git state, status, handoff, charter, registers, style guide, Quarto, Codex agents), says back what it understood in 25 lines or fewer, flags stale or conflicting records, proposes a role-to-file map, asks, and only then writes a minimal scholar/ folder and a short Scholar section in AGENTS.md or CLAUDE.md. Then handles Studio Method coexistence and the Humanizer check. Safe to re-run. Use when the user says "scholar start", "set up Scholar Method", "adopt the method", "use Scholar here", "start a new paper", or opens a research repo that has no scholar/ folder.
+description: Start a new research project with Scholar Method, or bring an existing thesis, paper or review repo into it without replacing anything. Understand-first, so it reads the repo (instructions, git state, status, handoff, charter, registers, style guide, Quarto, Codex agents), names what kind of project it seems to be (thesis, journal or conference paper, article, review, book, proposal) and asks the scholar to confirm, says back what it understood in 25 lines or fewer, flags stale or conflicting records, proposes a role-to-file map, asks, and only then writes a minimal scholar/ folder and a short Scholar section in AGENTS.md or CLAUDE.md. Then handles Studio Method coexistence and the Humanizer check. Safe to re-run. Use when the user says "scholar start", "set up Scholar Method", "adopt the method", "use Scholar here", "start a new paper", or opens a research repo that has no scholar/ folder.
 ---
 
 # Scholar start
@@ -12,7 +12,7 @@ Codex. `$SCHOLAR` is `scripts/scholar.mjs` in this skill folder (Claude Code:
 
 ## 1. Already adopted?
 1. Right folder? If this is not a git repo but a folder one or two levels down is, ask which one is the project.
-2. If `scholar/scholar.json` exists: say so in one line, run `node $SCHOLAR init --dry-run` (it must report "No
+2. If `scholar/scholar.json` exists: say so in one line (with `project.kind` if confirmed; if null, ask as in 2b), run `node $SCHOLAR init --dry-run` (it must report "No
    changes"; otherwise show what is missing) and offer `catch-up`. Stop here unless the scholar wants gaps filled
    (then `init --apply`; it never overwrites).
 3. New or existing? Existing: section 2. Empty or near-empty folder: section 3. Unsure: ask once.
@@ -28,7 +28,15 @@ Codex. `$SCHOLAR` is `scripts/scholar.mjs` in this skill folder (Claude Code:
 - Note what is stale or in conflict (two status files, old chapter counts, dates, objectives that differ between
   files). These are reconciliation tasks for the scholar, never permission to rewrite the study.
 
-### 2b. Say back (25 lines or fewer, plain words)
+### 2b. Name what you found (before the say-back)
+Run `node $SCHOLAR detect` (or read it from `init --dry-run`). Say one line: "It seems you are working on a
+**<kind>** (<1 to 3 strongest signals>)." Low confidence: offer the alternatives instead of asserting one. Ask
+(AskUserQuestion in Claude Code: Confirm, one or two likely alternatives, "Something else, I will describe it"; a plain
+question in Codex). Accept a correction, an addition ("a thesis plus two papers from it": suggest a separate project
+map per output, `related_projects` only if the scholar opts in) or the scholar's own definition. Nothing is written
+before this answer. Then take it ahead by kind: `references/project-kinds.md` (at most 3 questions, defaults first).
+
+### 2c. Say back (25 lines or fewer, plain words)
 What the study is and its stage; the target venue if known; what is approved versus open; what has actually been
 verified versus reported; where each Scholar role lives (status, handoff, decisions, sources, bib, style guide,
 drafts, assets); uncommitted work; stale or conflicting records; anything you could not work out. Then ask: "Looks
@@ -36,10 +44,11 @@ right" or "I will correct it", plus the one to three questions only the scholar 
 style, who the supervisor must approve). Paper projects must not inherit thesis page counts, chapter lists or
 decisions; a thesis and a paper from it need a separate map.
 
-### 2c. Write the minimum (after confirmation)
+### 2d. Write the minimum (after confirmation)
 1. Work on a feature branch (`scholar-adopt`), unless the project's own rules say otherwise.
-2. `node $SCHOLAR init --apply --kind thesis|paper|review`. It creates only missing files under `scholar/` and
-   maps equivalents instead of duplicating them. Correct any wrong mapping in `scholar/scholar.json` and
+2. `node $SCHOLAR init --apply --kind <kind>` with the confirmed kind (`--kind other --describe "..."` for the
+   scholar's own definition; without `--kind` the kind stays null and init reminds you). It creates only missing files
+   under `scholar/` and maps equivalents instead of duplicating them. Correct any wrong mapping in `scholar/scholar.json` and
    `scholar/PROJECT_MAP.md` by hand, from what the scholar confirmed.
 3. Append (never replace) the short Scholar section from `references/agents-snippet.md` to the existing `AGENTS.md`
    and/or `CLAUDE.md`, creating only the one the project's agent uses if neither exists.
@@ -48,7 +57,8 @@ decisions; a thesis and a paper from it need a separate map.
 5. Show `git diff` and `git status`. Commit on the branch (`scholar: adopt Scholar Method`). Do not merge or push.
 
 ## 3. New project
-Ask in one go (defaults first): kind (thesis, paper, review); working title; target venue or institution if known;
+No detection signals, so ask the kind directly (options from `references/project-kinds.md`, plus "Something else, I will
+describe it") and take it ahead by kind. Ask in one go (defaults first): kind; working title; target venue or institution if known;
 citation style (default APA 7); whether to opt in to a writing profile (default no). Create the folder layout the
 scholar wants for drafts (do not impose one), run `init --apply --kind <kind>`, add the Scholar section to
 `AGENTS.md`/`CLAUDE.md`, commit. Do not start drafting.
