@@ -23,7 +23,7 @@ Scholar Method is a scholar-led research companion: one Claude Code marketplace 
 - Thesis has no CSL file (renders Chicago, not APA 7): fix with `style.mjs use apa-7` at adoption. MLA/Chicago/Harvard/Vancouver not rendered; TinyTeX PDF untested; convert skips corporate authors and n.d.
 - Codex continuity not run: local Codex 0.29.0 config fails to load (owner to update/fix).
 - HTML viewers not opened in a browser; Mermaid parsed not rendered; Oxford-comma check is heuristic.
-- One-command bundle install tested from a local path (isolated config); not yet from GitHub. Per-project approvals: `docs/OWNER-APPROVALS.md`.
+- Installed from GitHub on this machine (user scope, all packs enabled) on 2026-11-25. Per-project approvals: `docs/OWNER-APPROVALS.md`.
 
 ## Next
-Install the packs, then run `scholar start` inside the thesis repo (dry-run notes in `private/thesis-dry-run.md`).
+Run `scholar start` inside the thesis repo (dry-run notes in `private/thesis-dry-run.md`).
