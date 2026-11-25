@@ -1,6 +1,6 @@
 # Current state
 
-**Updated:** 2026-11-25 · **Version:** 0.1.0 (unreleased, local only, no remote)
+**Updated:** 2026-11-25 · **Version:** 0.1.0 · public at https://github.com/rajeevScorpion/scholar-method
 
 ## Summary
 Scholar Method is a scholar-led research companion: one Claude Code marketplace with four packs
@@ -20,7 +20,7 @@ Scholar Method is a scholar-led research companion: one Claude Code marketplace 
 ## Open
 - Codex continuity not run: local Codex 0.29.0 config fails to load (owner to update/fix).
 - HTML viewers not opened in a browser; Mermaid parsed not rendered; Oxford-comma check is heuristic.
-- No remote; nothing published. Approvals pending: see `docs/OWNER-APPROVALS.md`.
+- Marketplace install from GitHub not yet tried in a live session. Per-project approvals: `docs/OWNER-APPROVALS.md`.
 
 ## Next
-Owner reviews the framework and `private/thesis-dry-run.md`, then decides hosting and thesis adoption.
+Install the packs, then run `scholar start` inside the thesis repo (dry-run notes in `private/thesis-dry-run.md`).
