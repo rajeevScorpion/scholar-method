@@ -1,0 +1,9 @@
+{
+  "name": "scholar-publish",
+  "version": "0.1.0",
+  "description": "From manuscript to submission: builds, format checks, submission checks and a publication map. Skills are coming in 0.1.",
+  "author": {
+    "name": "Aavriti Design Studio"
+  },
+  "keywords": ["publishing","submission"]
+}

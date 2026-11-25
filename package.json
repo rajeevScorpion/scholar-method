@@ -1,0 +1,10 @@
+{
+  "name": "scholar-method",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A scholar-led research companion for inquiry, evidence, thinking, writing and continuity.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

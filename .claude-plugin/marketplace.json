@@ -1,0 +1,40 @@
+{
+  "name": "scholar-method",
+  "owner": {
+    "name": "Aavriti Design Studio"
+  },
+  "metadata": {
+    "description": "Scholar Method: a scholar-led research companion for inquiry, evidence, thinking, writing and continuity.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "scholar-core",
+      "source": "./plugins/scholar-core",
+      "description": "How we work with a scholar: start or adopt a research project without overwriting it, the scholar contract (evidence integrity, approvals, conversation posture), catch-up and check-out, harvest and forge.",
+      "version": "0.1.0",
+      "displayName": "Scholar Core · way of working"
+    },
+    {
+      "name": "scholar-research",
+      "source": "./plugins/scholar-research",
+      "description": "Thinking and evidence: explore insights, find and read secondary sources, map claims to questions, analyse supplied data and visualise it. Skills are coming in 0.1.",
+      "version": "0.1.0",
+      "displayName": "Scholar Research · inquiry and evidence"
+    },
+    {
+      "name": "scholar-writing",
+      "source": "./plugins/scholar-writing",
+      "description": "Author-directed writing support: evidence-gated drafting, voice review, citation checks and revision responses. Skills are coming in 0.1.",
+      "version": "0.1.0",
+      "displayName": "Scholar Writing · drafting and review"
+    },
+    {
+      "name": "scholar-publish",
+      "source": "./plugins/scholar-publish",
+      "description": "From manuscript to submission: builds, format checks, submission checks and a publication map. Skills are coming in 0.1.",
+      "version": "0.1.0",
+      "displayName": "Scholar Publish · build and submit"
+    }
+  ]
+}

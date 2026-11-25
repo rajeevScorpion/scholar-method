@@ -1,0 +1,5 @@
+---
+title: "Chapter 1 (synthetic)"
+---
+
+This chapter is a stub for tests.

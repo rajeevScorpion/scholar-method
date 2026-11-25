@@ -1,0 +1,9 @@
+{
+  "name": "scholar-core",
+  "version": "0.1.0",
+  "description": "How we work with a scholar: start or adopt a research project without overwriting it, the scholar contract (evidence integrity, approvals, conversation posture), catch-up and check-out, harvest and forge.",
+  "author": {
+    "name": "Aavriti Design Studio"
+  },
+  "keywords": ["research","handoff","evidence","scholar-led"]
+}

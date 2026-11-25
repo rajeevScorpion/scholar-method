@@ -1,0 +1,9 @@
+{
+  "name": "scholar-research",
+  "version": "0.1.0",
+  "description": "Thinking and evidence: explore insights, find and read secondary sources, map claims to questions, analyse supplied data and visualise it. Skills are coming in 0.1.",
+  "author": {
+    "name": "Aavriti Design Studio"
+  },
+  "keywords": ["research","sources","evidence"]
+}
