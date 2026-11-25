@@ -1,4 +1,4 @@
-# Handoff — 2026-11-25
+# Handoff, 2026-11-25
 
 **Stopped at:** 0.1.3 pushed to https://github.com/rajeevScorpion/scholar-method: four packs plus the `scholar` bundle, project-type detection, APA 7 default with style switching and citation conversion, Quarto checks. README is being rewritten in the Studio Method style.
 
