@@ -228,6 +228,7 @@ function planInit(root, kind) {
       profile: { kind: kind ?? "unset", citation_style: "APA 7", writing_profile: null },
       paths,
       writing: WRITING_DEFAULTS,
+      harvest: { allow_domains: [], deny_terms: [] },
       capture: "batch",
       harvest_outbox: "tracked",
       related_projects: [],
@@ -445,7 +446,8 @@ function cmdStatus(opt) {
   };
   const pending = recs.filter((r) => r.type === "insight" && r.data.author_decision === "pending");
   const hdir = join(root, "scholar", "harvest", "pending");
-  const harvest = existsSync(hdir) ? readdirSync(hdir).filter((n) => n.endsWith(".md")).length : 0;
+  const hfiles = existsSync(hdir) ? readdirSync(hdir).filter((n) => n.endsWith(".md")) : [];
+  const harvest = hfiles.length;
   console.log(`Scholar status (${root})`);
   console.log(`  insights by decision: ${count("insight", "author_decision")}`);
   console.log(`  insights by evidence: ${count("insight", "evidence_status")}`);
@@ -454,7 +456,8 @@ function cmdStatus(opt) {
   console.log(`  visuals by status: ${count("visual", "status")}`);
   console.log(`  pending harvest proposals: ${harvest}`);
   console.log(`  validation: ${issues.filter((i) => i.level === "ERROR").length} error(s), ${issues.filter((i) => i.level === "WARN").length} warning(s)`);
-  if (pending.length) { console.log("  insights awaiting your decision:"); for (const r of pending) console.log(`    ${r.data.id}  ${r.data.title ?? ""}`); }
+  if (pending.length) { console.log("  insights awaiting your decision:"); for (const r of pending) console.log(`    ${r.data.id}  (${r.data.kind ?? "?"}, evidence ${r.data.evidence_status ?? "?"})  ${r.data.title ?? ""}`); }
+  if (harvest) { console.log("  harvest proposals pending (not yet sent anywhere):"); for (const f of hfiles) console.log(`    ${f.slice(0, -3)}`); }
   return 0;
 }
 

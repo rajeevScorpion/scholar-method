@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { cpSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
@@ -49,3 +49,19 @@ export function snapshot(dir) {
 
 export const gitStatus = (dir) => execFileSync("git", ["status", "--short"], { cwd: dir }).toString();
 export const homeEnv = (home) => ({ HOME: home, USERPROFILE: home });
+
+export const HARVEST = join(REPO, "plugins/scholar-core/skills/harvest/scripts/harvest.mjs");
+export const hv = (dir, ...a) => run(HARVEST, [...a, "--root", dir]);
+
+// A throwaway method checkout: a git repo that looks like Scholar Method, no remote.
+export function methodCheckout() {
+  const dir = tmp("scholar-method-co-");
+  mkdirSync(join(dir, ".claude-plugin"));
+  writeFileSync(join(dir, ".claude-plugin/marketplace.json"), JSON.stringify({ name: "scholar-method", plugins: [] }));
+  writeFileSync(join(dir, "README.md"), "method\n");
+  const git = (...a) => execFileSync("git", a, { cwd: dir, stdio: "ignore" });
+  git("init", "-q"); git("config", "user.email", "m@example.org"); git("config", "user.name", "Maintainer");
+  git("add", "-A"); git("commit", "-q", "-m", "init");
+  return dir;
+}
+export const gitOut = (dir, ...a) => execFileSync("git", a, { cwd: dir }).toString().trim();

@@ -23,12 +23,23 @@ scholar/
   harvest/pending/HRV-<date>-<slug>.md   harvest/declined.md
 ```
 
+## Harvest proposal
+`harvest.mjs new` writes `scholar/harvest/pending/HRV-<date>-<slug>.md`. Frontmatter: `proposal_id, created, title,
+source_project` (`generic`), `category` (rule, skill-fix, new-skill, research-gotcha, template), `problem,
+observed_solution, generalisability, evidence_or_test, proposed_target` (a path in the method repo), `privacy_review`
+(pending, passed), `privacy_hash` (set by `check --pass`; changes if the text is edited), `review_status` (proposed,
+reviewed, accepted, declined), `owner_approval` (pending, yes, declined), `upstream_status` (not-submitted,
+bundle-exported, `branch harvest/<id> (local, not pushed)`, submitted, merged). Declined items are one line each in
+`scholar/harvest/declined.md`: `- date | id | title | reason`.
+
 ## scholar.json
 `method_version`, `profile` (`kind` thesis|paper|review|unset, `citation_style`, `writing_profile`: a profile name such as
 `indian-academic-english`, a repo-relative path, or null; the only place a writing profile is selected),
 `paths` (status, handoff, decisions, sources, bib, style_guide, drafts, assets, quarto, agents_md, claude_md,
 codex_agents; each a repo-relative path or null), `capture` (`batch|ask|off`), `harvest_outbox` (`tracked|ignored`),
-`writing` (lint switches, below), `related_projects` (empty unless the scholar opts in, naming each project), `external_ids` (IDs or citekeys that
+`writing` (lint switches, below), `harvest` (`allow_domains`: public documentation domains a proposal may link to,
+default none; `deny_terms`: words that must never appear in a proposal, such as title words, names, institution; set
+at adoption), `related_projects` (empty unless the scholar opts in, naming each project), `external_ids` (IDs or citekeys that
 live outside `scholar/`, for example the project's own register IDs). Citekeys found in the mapped `.bib` file also
 count as known.
 

@@ -6,8 +6,12 @@ Scholar Method grows from real research work. You do not need write access to he
 1. **Fork and pull request.** Fork the repo, make a branch, change a skill or add one, run the checks below, open a
    PR that says what problem it solves and how you tested it.
 2. **A harvest bundle.** Working in your own project, say "harvest". The agent drafts anonymised proposals in
-   `scholar/harvest/pending/`, checks them for private content and, with your approval, exports a bundle. Attach
-   the bundle to an issue or PR. The maintainer reviews it. Installing the method never gives write access.
+   `scholar/harvest/pending/`, runs the privacy scan (`harvest.mjs check`) and, with your approval, exports a bundle
+   (`harvest.mjs bundle <id> --out harvest-bundle.md`). Attach the bundle to an issue or PR. The maintainer reviews it.
+   Installing the method never gives write access.
+
+Maintainers receive proposals in `harvest-inbox/` (see its README), on a `harvest/<id>` branch from `harvest.mjs
+promote` or as a bundle, and apply them with the `forge` skill. Nothing in this repo is pushed without the owner's yes.
 
 ## What a good skill looks like
 - `plugins/<pack>/skills/<name>/SKILL.md` with `name` and a `description` that includes "Use when ..." phrases.

@@ -24,10 +24,6 @@ function field(text, labels) {
   return "";
 }
 
-function count(dir, test) {
-  try { return readdirSync(dir).filter(test).length; } catch { return 0; }
-}
-
 try {
   const bases = [process.cwd()];
   try {
@@ -53,11 +49,13 @@ try {
     const idir = join(root, "scholar", "insights");
     for (const f of (existsSync(idir) ? readdirSync(idir) : []).filter((n) => n.endsWith(".md")))
       if (/^author_decision:\s*pending\s*$/m.test(readFileSync(join(idir, f), "utf8"))) pending++;
-    const harvest = count(join(root, "scholar", "harvest", "pending"), (n) => n.endsWith(".md"));
+    const hdir = join(root, "scholar", "harvest", "pending");
+    const hnames = existsSync(hdir) ? readdirSync(hdir).filter((n) => n.endsWith(".md")).map((n) => n.slice(0, -3)) : [];
+    const harvest = hnames.length;
     // other packs install as separate plugins, so they find the core CLI through this absolute path
     const cli = fileURLToPath(new URL("../skills/scholar-start/scripts/scholar.mjs", import.meta.url));
     out.push(`Scholar CLI ($SCHOLAR): node "${cli}"`);
-    out.push(`Insights awaiting the scholar's decision: ${pending}. Pending harvest proposals: ${harvest}.`);
+    out.push(`Insights awaiting the scholar's decision: ${pending}. Pending harvest proposals: ${harvest}${harvest ? " (" + cut(hnames.slice(0, 3).join(", "), 160) + ")" : ""}.`);
     console.log(out.join("\n"));
   }
 } catch {}

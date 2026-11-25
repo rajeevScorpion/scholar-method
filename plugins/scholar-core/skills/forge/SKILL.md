@@ -14,7 +14,9 @@ AskUserQuestion in Claude Code, a plain question in Codex. Work inside the metho
 - Which pack? `scholar-core` (way of working), `scholar-research` (thinking and evidence), `scholar-writing`
   (author-directed writing), `scholar-publish` (build and submit). New pack only if none fits.
 - New or change? For a change, read the current skill first and keep its name and trigger phrases.
-Check `docs/ROADMAP.md` and `scholar/harvest` proposals in hand; they may already hold the draft text.
+Check `docs/ROADMAP.md` and `harvest-inbox/` (proposals contributors sent on `harvest/<id>` branches, or bundles in
+it); they may already hold the draft text. A proposal is a suggestion: review it, decide, apply it by hand in the right
+pack, and say in the commit which proposal it came from. Decline it in the inbox with a one-line reason if it does not fit.
 
 ## 2. Gather what is true
 - From the project that produced it: the steps that worked, the gotchas, the commands.
@@ -45,6 +47,7 @@ Check `docs/ROADMAP.md` and `scholar/harvest` proposals in hand; they may alread
    `.claude-plugin/marketplace.json` (they must agree). New skill: minor. Fix: patch. If the pack is
    `scholar-core`, also update `VERSION` in `scholar.mjs` and the marketplace `metadata.version` when releasing.
 2. Update `README.md` (skills table), `CHANGELOG.md` and `docs/ROADMAP.md` (remove the item if it came from there).
+   Delete the applied `harvest-inbox/<id>.md` in the same commit.
 3. Commit locally with a clear message (`forge: <skill> (<pack> <version>)`). No AI attribution lines.
 4. Ask before pushing: "Push Scholar Method <version>?" Never push without a yes.
 5. Tell the owner how projects get it: Claude Code `/plugin marketplace update scholar-method` then update the pack;
