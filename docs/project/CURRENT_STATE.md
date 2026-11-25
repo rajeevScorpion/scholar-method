@@ -1,6 +1,6 @@
 # Current state
 
-**Updated:** 2026-11-25 · **Version:** 0.1.2 · public at https://github.com/rajeevScorpion/scholar-method
+**Updated:** 2026-11-25 · **Version:** 0.1.3 · public at https://github.com/rajeevScorpion/scholar-method
 
 ## Summary
 Scholar Method is a scholar-led research companion: one Claude Code marketplace with four packs
@@ -14,12 +14,13 @@ Scholar Method is a scholar-led research companion: one Claude Code marketplace 
   Vega-Lite render with SVG export and VIS sidecars.
 - scholar-writing: `draft`, `voice-review`, `cite`; opt-in voice profile; `lint-prose`, `fact-guard`,
   `check-citations`. scholar-publish: `build` (preflight), `submission-check`.
-- `npm test` 71/71 pass; `claude plugin validate .` passes. Real `claude -p` continuity run recorded.
+- Citation styles: APA 7 default (bundled CSL), `style.mjs` status/use/fetch/fields/convert/narrative; real Quarto renders (APA and IEEE to HTML/DOCX, Typst PDF) pass.
+- `npm test` 101 pass, 1 network test skipped by default; `claude plugin validate .` passes. Real `claude -p` continuity run recorded.
 - `scholar start` names the project type (thesis, journal or conference paper, article, review, book, proposal, other) and waits for confirmation; real thesis detected as thesis (high).
 - Thesis dry run done read-only (status identical before/after); write-up in gitignored `private/`.
 
 ## Open
-- Quarto render and citation-style switching (CSL) not yet built or tested; thesis has no CSL file (renders Chicago, not APA 7).
+- Thesis has no CSL file (renders Chicago, not APA 7): fix with `style.mjs use apa-7` at adoption. MLA/Chicago/Harvard/Vancouver not rendered; TinyTeX PDF untested; convert skips corporate authors and n.d.
 - Codex continuity not run: local Codex 0.29.0 config fails to load (owner to update/fix).
 - HTML viewers not opened in a browser; Mermaid parsed not rendered; Oxford-comma check is heuristic.
 - One-command bundle install tested from a local path (isolated config); not yet from GitHub. Per-project approvals: `docs/OWNER-APPROVALS.md`.
