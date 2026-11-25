@@ -1,6 +1,6 @@
 # Stage 1 notes (helper)
-**Done:** manifests (4 packs), scholar.mjs (init/doctor/validate/new/status), session hook, installer, tests + fixtures (scripts tests green).
-**In progress:** scholar-core SKILL.md files and references.
+**Done:** manifests, scholar CLI, hook, installer, tests, six scholar-core skills; claude plugin validate and node --test green.
+**In progress:** root docs and docs/project.
 **Next:** root docs, docs/project, claude plugin validate, full node --test.
 **Gotchas:** Codex project skills path is `.agents/skills` (docs); user level docs say ~/.agents/skills, this machine uses ~/.codex/skills.
 Heredocs with apostrophes break the Bash tool; use the Write tool for files.
