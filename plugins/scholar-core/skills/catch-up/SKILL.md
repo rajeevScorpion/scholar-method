@@ -1,6 +1,6 @@
 ---
 name: catch-up
-description: Give the scholar a 4 to 5 bullet snapshot of where the research project was left, from the mapped handoff and status docs, plus insights awaiting their decision and pending harvest proposals, then offer what to do next. Never presents a hypothesis as a finding. Use when the user says "catch up", "catch me up", "where did we leave off", "what was I working on", "pick up from last time", or starts a session in a Scholar project without a task.
+description: Give the scholar a 4 to 5 bullet snapshot of where the research project was left, from the mapped handoff and status docs, plus insights awaiting their decision and pending harvest proposals, then offer what to do next. Never presents a hypothesis as a finding. Use when the user says "catch up", "check in", "check-in", "catch me up", "where did we leave off", "what was I working on", "pick up from last time", or starts a session in a Scholar project without a task.
 ---
 
 # Catch up

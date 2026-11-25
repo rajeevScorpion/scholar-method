@@ -24,6 +24,11 @@ claude plugin validate .
 ```
 Tests copy synthetic fixtures from `tests/fixtures/` into temp folders; never put real research content there.
 
+## Session words here
+This repo is software, not a research project, so it has no `scholar/` folder: "catch up" and "check out" run Studio
+Method's skills against `docs/project/`. Improvements to Scholar Method itself go in through `forge` (scholar-core),
+not Studio's harvest.
+
 ## Rules for this repo
 - `promptPacks/` is gitignored and stays untracked. Never commit it.
 - No AI attribution lines in commits. Never push or create remotes without the owner's yes.

@@ -1,11 +1,11 @@
-# Handoff
+# Handoff — 2026-11-25
 
-**Stopped at:** Stage 1 built on `main`: scholar-core (six skills, CLI, hook), Codex installer, tests, root docs. Not pushed; no remote.
+**Stopped at:** 0.1.3 pushed to https://github.com/rajeevScorpion/scholar-method: four packs plus the `scholar` bundle, project-type detection, APA 7 default with style switching and citation conversion, Quarto checks. README is being rewritten in the Studio Method style.
 
-**In flight:** nothing.
+**In flight:** README rewrite (helper). Nothing else uncommitted.
 
-**Next step:** the owner reviews Stage 1; then build `harvest.mjs`, then scholar-research (see `docs/ROADMAP.md`).
+**Open questions:** auto-migrate an old `profile.citation_style` into `citation`? Should Scholar visuals reuse the thesis `VIS-####` numbering (owner said yes: reuse existing systems).
 
-**Owner to-do:** decide where the repo is hosted and whether to publish; review `docs/ARCHITECTURE.md` deviations; choose a first dry-run adoption target (not before a reviewed dry run on a copy).
+**Next step:** install the plugins (`/plugin install scholar@scholar-method`), then open a session in the thesis repo and say "scholar start". Owner to-dos: fix `~/.codex/config.toml` so Codex can run; at adoption, approve `style.mjs use apa-7` (the thesis has no CSL, so it renders Chicago).
 
-**Open:** Codex global skills path differs between docs (`~/.agents/skills`) and this machine's install (`~/.codex/skills`); the installer handles both. Humanizer provenance can only be proven by plugin id or a skills lock file.
+**Session words in this repo:** this is the method's source code, so "catch up" and "check out" run Studio Method's skills against `docs/project/`. Lessons for Scholar Method itself go in through `forge` here, not Studio's harvest.

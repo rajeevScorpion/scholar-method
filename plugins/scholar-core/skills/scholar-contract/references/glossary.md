@@ -6,7 +6,7 @@ spellings are the house style; US spellings are accepted as aliases (analyse or 
 | Say | What happens | Skill | Pack |
 |---|---|---|---|
 | "scholar start" | Read the repo, say back what is understood, map existing files, adopt without overwriting | scholar-start | core |
-| "catch up", "where did we leave off" | 4 to 5 bullets from the handoff, open insights, pending harvest, then a choice | catch-up | core |
+| "catch up", "check in", "where did we leave off" | 4 to 5 bullets from the handoff, open insights, pending harvest, then a choice | catch-up | core |
 | "check out", "wrap up", "close the session" | Review captured insights, update status and handoff, validate, offer harvest, commit locally | check-out | core |
 | "harvest", "add this to the method" | Offer reusable lessons from the session for the method, after review | harvest | core |
 | "forge", "make this a skill" | Maintainer adds or changes a skill in the method repo | forge | core |
