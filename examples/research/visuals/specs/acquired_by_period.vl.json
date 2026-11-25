@@ -1,0 +1,31 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Synthetic test fixture: acquired artefacts per period (ticks mark the target)",
+  "description": "Grouped bar chart of acquired synthetic artefacts by period (P1 to P4) and domain (interface, editorial), with a tick on each bar position showing the target of 6. Period P3 editorial has a target but no acquired artefacts, so it has a tick and no bar. Synthetic test fixture, not real research data.",
+  "width": 360,
+  "height": 220,
+  "data": { "url": "../../data/synthetic_artefacts.csv", "format": { "type": "csv" } },
+  "encoding": {
+    "x": { "field": "period", "type": "nominal", "title": "Period (synthetic labels)" },
+    "xOffset": { "field": "domain", "type": "nominal", "sort": ["interface", "editorial"] }
+  },
+  "layer": [
+    {
+      "mark": { "type": "bar", "tooltip": true },
+      "encoding": {
+        "y": { "aggregate": "count", "type": "quantitative", "title": "Acquired artefacts (count of rows)" },
+        "color": { "field": "domain", "type": "nominal", "title": "Domain (acquired)", "sort": ["interface", "editorial"] }
+      }
+    },
+    {
+      "data": { "url": "../../data/synthetic_targets.csv", "format": { "type": "csv" } },
+      "mark": { "type": "tick", "color": "#000000", "thickness": 2, "size": 28, "tooltip": true },
+      "encoding": {
+        "y": { "field": "target_n", "type": "quantitative", "title": "Acquired artefacts (count of rows)" },
+        "tooltip": [
+          { "field": "period" }, { "field": "domain" }, { "field": "target_n", "title": "target (planned, not observed)" }
+        ]
+      }
+    }
+  ]
+}

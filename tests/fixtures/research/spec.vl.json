@@ -1,0 +1,8 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Synthetic test fixture",
+  "description": "Synthetic test fixture: count of rows by group.",
+  "data": { "url": "data.csv", "format": { "type": "csv" } },
+  "mark": "bar",
+  "encoding": { "x": { "field": "group", "type": "nominal" }, "y": { "aggregate": "count", "type": "quantitative" } }
+}

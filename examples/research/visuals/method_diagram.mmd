@@ -1,0 +1,10 @@
+%% Synthetic test fixture: method diagram (concept sketch, not a result). Edited by hand.
+flowchart TD
+  A["Acquired artefacts<br/>(coded rows only)"] --> B["Inspect: schema, counts, missing cells"]
+  T["Target sample<br/>(planned, not observed)"] -.-> B
+  B --> C{"Cell has acquired rows?"}
+  C -->|yes| D["Count by period and domain"]
+  C -->|no| E["Gate: no data for this cell<br/>(show target tick, draw no bar)"]
+  D --> F["Chart + caption + VIS sidecar"]
+  E --> F
+  F --> G["Scholar reviews: pattern is not cause"]
