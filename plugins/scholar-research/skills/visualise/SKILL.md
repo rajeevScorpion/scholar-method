@@ -20,6 +20,9 @@ Load `scholar-contract` first. Libraries, versions and licences: `references/lib
    data; secondary-source extraction; records (insights, claims, sources); author hypothesis; concept sketch.
 3. Check what exists in the project: a visual asset ledger, an Excalidraw board, an assets folder, a figure
    style. Map and reuse them; never replace the scholar's boards. Acquiring new image files needs their yes.
+   An existing ledger or numbering is the system of record: register the visual there under its next ID, in
+   its own format. If it lacks fields Scholar needs (inputs, spec, transforms, status, exports), propose adding
+   those columns to the ledger (ask first) rather than starting a parallel register.
 
 ## 2. Inspect before drawing
 4. Check schema, units, date range, sample sizes, missing values, duplicates, rights, and whether the data is
@@ -68,7 +71,9 @@ Load `scholar-contract` first. Libraries, versions and licences: `references/lib
     their changes through the spec, not by hand-editing an image.
 
 ## 7. Preserve and export
-14. Every substantive visual gets a sidecar `scholar/visuals/VIS-000N.md` (`records.md`): status `exploratory`
+14. Every substantive visual gets a provenance record: in the project's own ledger when one exists (step 3),
+    otherwise a sidecar `scholar/visuals/VIS-000N.md` (`records.md`). A sidecar for a ledgered visual reuses the
+    ledger ID (or names it in the body when its shape differs). Status `exploratory`
     until the scholar says otherwise, `review_status: author-review-needed`, `evidence_class`, `input_refs`,
     `transforms`, `render_spec`, `limitations`, `assumptions`, `exports`. Concept sketches use
     `evidence_class: concept` and are captioned as sketches. Body: caption and alt text (what is shown, sample

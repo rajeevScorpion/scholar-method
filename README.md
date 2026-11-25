@@ -48,18 +48,17 @@ language always works.
 
 ## Install
 
-Needs Node 18 or newer for the scripts (no packages to install). `<path-or-git-url>` is a local checkout of this repo
-or its Git URL.
+Needs Node 18 or newer for the scripts (no packages to install). Source: https://github.com/rajeevScorpion/scholar-method
 
 ### Claude Code
 ```
-/plugin marketplace add <path-or-git-url>
+/plugin marketplace add rajeevScorpion/scholar-method
 /plugin install scholar-core@scholar-method
 /plugin install scholar-research@scholar-method
 /plugin install scholar-writing@scholar-method
 /plugin install scholar-publish@scholar-method
 ```
-To test from a local folder, give the path of your checkout as `<path-or-git-url>`.
+To test from a local checkout, pass its folder path to `/plugin marketplace add` instead.
 Update: `/plugin marketplace update scholar-method`, then update each pack. Uninstall: `/plugin uninstall scholar-core@scholar-method`.
 Skills appear namespaced (`scholar-core:catch-up`) and also load from plain words ("catch up").
 

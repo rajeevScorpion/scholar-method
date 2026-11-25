@@ -1,6 +1,14 @@
 # Actions awaiting the owner
 
-Nothing below has been done. Each needs an explicit yes.
+## Decided by the owner (2026-11-25)
+- Hosted publicly on GitHub: https://github.com/rajeevScorpion/scholar-method (rows 1 to 3 done).
+- Global `~/.claude/CLAUDE.md` exception line added (row 6 done).
+- Humanizer is installed per project, only after the scholar's yes in that project (row 4 stays a per-project question).
+- Adoption is allowed, run by `scholar start` inside each research repo (row 5 and 7 are asked there).
+- Visuals reuse a project's existing ledger and ID scheme, extending it rather than running a parallel register.
+
+## Standing approvals still asked each time
+Each row below still needs an explicit yes at the moment it happens.
 
 | # | Action | Why it is held | Command or step |
 |---|---|---|---|

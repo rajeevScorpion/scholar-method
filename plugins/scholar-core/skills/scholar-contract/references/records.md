@@ -93,6 +93,8 @@ render_spec, limitations, assumptions, review_status, exports`.
 `status`: exploratory, evidence-linked, approved, manuscript-ready. `input_refs`, `question_links`, `assumptions`
 and `exports` are lists. `transforms` and `render_spec` are repo-relative paths to the script and spec that make the
 figure. Keep concept sketches (`evidence_class: concept`) apart from empirical figures. Body: the caption and notes.
+When the project already has a visual ledger or ID scheme, that ledger is the record and its IDs are reused; a
+sidecar is only added for fields the ledger cannot hold (skill `visualise`, step 3).
 
 ## What `validate` checks
 Parse errors and nesting; required fields; enum values; ID shape, uniqueness and file name; list fields are lists;

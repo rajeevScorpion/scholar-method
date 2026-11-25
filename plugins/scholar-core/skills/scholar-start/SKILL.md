@@ -74,9 +74,11 @@ Humanizer (`blader/humanizer`) is an optional third-party editing assistant. Nev
    in doctor) is NOT blader's. Report it as "a differently sourced humanizer", not as the one we mean.
 4. `absent`: tell the scholar what would be installed, where (this project or global), and the exact commands, and
    ask. Say you will re-read the upstream README (https://github.com/blader/humanizer) before running anything,
-   because commands change. Commands as last checked (2026-11-25):
-   - Claude Code: `/plugin marketplace add blader/humanizer` then `/plugin install humanizer@humanizer`
-   - Codex, this project only: `npx skills add blader/humanizer --agent codex`
+   because commands change. Default to installing in this project only; global only if the scholar asks.
+   Commands as last checked (2026-11-25):
+   - Claude Code, this project: `claude plugin marketplace add blader/humanizer --scope project` then
+     `claude plugin install humanizer@humanizer --scope project` (in-session: `/plugin` and pick project scope)
+   - Codex, this project: `npx skills add blader/humanizer --agent codex`
    - Codex, global: `npx skills add blader/humanizer --global --agent codex`
    Run only the one for the active agent and only after a yes. Verify it loads and test on a short synthetic sample.
 5. Declined: carry on without it. Humanizer never overrides the contract (`scholar-contract`, section 3).

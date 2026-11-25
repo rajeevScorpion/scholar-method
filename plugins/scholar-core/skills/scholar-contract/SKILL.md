@@ -18,6 +18,8 @@ Scholar packs use. Called `$SCHOLAR` below (`node $SCHOLAR <command>`).
 ## 1. At session start
 1. Find `scholar/scholar.json` (repo root). It maps each Scholar role (status, handoff, decisions, sources, bib,
    style guide, drafts) to the project's own files. Those files are the truth; read them through the map.
+   Reuse any existing system (registers, ledgers, ID schemes, boards); where it lacks something Scholar needs,
+   extend it with the scholar's yes instead of creating a parallel record.
 2. Read the mapped handoff first ("Stopped at" and "Next step"), then the status doc. Do not re-read manuscripts.
 3. Apply the precedence ladder (section 3) before any default in this skill.
 4. No `scholar/` folder? Say so in one line and offer `scholar-start`. Do not create files.
