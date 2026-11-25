@@ -1,7 +1,8 @@
 # Stage 1 notes (helper)
-**Done:** manifests, scholar CLI, hook, installer, tests, six scholar-core skills; claude plugin validate and node --test green.
-**In progress:** root docs and docs/project.
-**Next:** root docs, docs/project, claude plugin validate, full node --test.
-**Gotchas:** Codex project skills path is `.agents/skills` (docs); user level docs say ~/.agents/skills, this machine uses ~/.codex/skills.
-Heredocs with apostrophes break the Bash tool; use the Write tool for files.
-Humanizer SKILL.md never says "blader": provenance can only come from plugin id or a skills lock file.
+**Done:** manifests (4 packs), scholar CLI, hook, Codex installer, six scholar-core skills, root docs, docs/project; 20 tests and `claude plugin validate .` green.
+**In progress:** nothing.
+**Next:** main session reviews; then harvest.mjs, scholar-research.
+**Gotchas:** Codex project skills path is `.agents/skills` (official docs); docs say user level is ~/.agents/skills, this machine uses ~/.codex/skills (installer prefers it if it exists).
+Heredocs with apostrophes break the Bash tool; use the Write tool.
+Humanizer SKILL.md never says "blader": provenance only from plugin id `humanizer@humanizer` or a skills lock file.
+Tests spawn git; they set HOME and USERPROFILE to temp dirs for doctor and installer.
