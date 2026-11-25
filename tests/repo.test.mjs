@@ -16,7 +16,7 @@ test("marketplace and plugin versions agree, four packs exist", () => {
     assert.equal(pj.version, p.version, `${p.name} version mismatch`);
     assert.equal(p.source, `./plugins/${p.name}`);
   }
-  assert.equal(mk.metadata.version, "0.1.1");
+  assert.equal(mk.metadata.version, "0.1.2");
 });
 
 test("scholar.mjs VERSION equals the scholar-core version", () => {

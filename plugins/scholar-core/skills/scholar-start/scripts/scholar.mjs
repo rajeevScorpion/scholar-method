@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// Scholar Method CLI: init, doctor, validate, new, status. Zero dependencies; imports nothing from other skills.
-// Usage: node scholar.mjs <init|doctor|validate|new|status> [options]   (run with no arguments for help)
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+// Scholar Method CLI: init, detect, doctor, validate, new, status. Zero dependencies; imports nothing from other skills.
+// Usage: node scholar.mjs <init|detect|doctor|validate|new|status> [options]   (run with no arguments for help)
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, readSync, readdirSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { homedir } from "node:os";
 import { dirname, join, relative, resolve, sep } from "node:path";
 
-const VERSION = "0.1.0"; // keep equal to plugins/scholar-core/.claude-plugin/plugin.json (a test checks)
+const VERSION = "0.1.2"; // keep equal to plugins/scholar-core/.claude-plugin/plugin.json (a test checks)
 
 // ---------- schema (documented in scholar-contract/references/records.md) ----------
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -53,6 +53,9 @@ const SCHEMA = {
   },
 };
 const TYPES = Object.keys(SCHEMA);
+// project kinds the scholar can confirm (scholar.json project.kind); --kind paper is accepted as an alias of journal-paper
+const KINDS = ["thesis", "journal-paper", "conference-paper", "article", "review", "book", "proposal", "other"];
+const KIND_SOURCES = ["detected-confirmed", "owner-defined"];
 // defaults for the `writing` object (lint rules; the writing profile itself is opt-in via profile.writing_profile)
 const WRITING_DEFAULTS = { no_dashes: true, no_oxford_comma: true, serial_comma: false, spelling: "indian", no_contractions: true, ai_register: true, protected_terms: [] };
 const WRITING_TYPES = { no_dashes: "boolean", no_oxford_comma: "boolean", serial_comma: "boolean", spelling: "string", no_contractions: "boolean", ai_register: "boolean", protected_terms: "array" };
@@ -196,6 +199,74 @@ function detect(root) {
   };
 }
 
+// ---------- project-type detection (read-only; nothing is recorded until the scholar confirms) ----------
+// [kind, weight, reason, path regex (file and folder names), text regex (light content)]. Each signal counts once.
+const KIND_SIGNALS = [
+  ["thesis", 3, "thesis, dissertation or doctoral wording", /thesis|dissertation/m, /\b(dissertation|doctoral|ph\.?d|master'?s thesis|thesis)\b/],
+  ["thesis", 2, "a chapters folder or numbered chapters", /(^|[/_-])(chapters?|ch\d{1,2})([/_.-]|$)/m, null],
+  ["thesis", 2, "supervisor, viva or examiners mentioned", /supervisor|viva|examiner/m, /\b(supervisors?|viva|examiners?|candidature|doctoral committee)\b/],
+  ["thesis", 2, "university format or template rules", /(university|institute)[-_ ]?(template|format|guidelines|regulations)|(thesis|dissertation)[-_ ]?template/m, /\b(university|institute) (template|format|guidelines|regulations)\b/],
+  ["journal-paper", 2, "abstract and keywords", null, /(?=[\s\S]*\babstract\b)(?=[\s\S]*\bkeywords?\b)/],
+  ["journal-paper", 2, "names a journal or a manuscript under submission", null, /\b(submitted to|target journal|journal of|manuscript under|journal paper|journal article)\b/],
+  ["journal-paper", 3, "cover letter or reviewer response", /cover[-_ ]?letter|response[-_ ]?to[-_ ]?reviewers?|reviewer[-_ ]?(response|comments)|rebuttal/m, /\b(cover letter|reviewer (response|comments)|response to reviewers|revise and resubmit|major revision|minor revision)\b/],
+  ["journal-paper", 2, "a single manuscript or paper file", /(^|\/)(manuscript|paper)[^/]*\.(md|qmd|tex|docx)$/m, null],
+  ["conference-paper", 3, "conference template (ACM, IEEE, LNCS)", /acmart|ieeetran|llncs|sigconf/m, /\b(acm|ieee|lncs|acmart|ieeetran)\b/],
+  ["conference-paper", 3, "proceedings or camera-ready wording", /camera[-_ ]?ready|proceedings/m, /\b(proceedings|camera[- ]ready)\b/],
+  ["conference-paper", 2, "conference, workshop or page limit", /conference|workshop/m, /\b(conference|workshop|symposium|page limit|double[- ]blind)\b/],
+  ["article", 3, "article, essay or magazine wording", /(^|[/_-])(article|essay|op-?ed|column|blog)/m, /\b(magazine|op-?ed|essay|newsletter|blog post|feature article|byline|pitch)\b/],
+  ["review", 4, "PRISMA, systematic or scoping review", /prisma|systematic|scoping/m, /\b(prisma|systematic review|scoping review|meta-analysis|rapid review|umbrella review)\b/],
+  ["review", 3, "screening, inclusion criteria or a search protocol", /screening|inclusion|search[-_ ]?(log|protocol|strateg|string)|extraction|protocol/m, /\b(screening|inclusion criteria|exclusion criteria|eligibility criteria|search strategy|search protocol|search strings?|data extraction|risk of bias)\b/],
+  ["review", 1, "literature review wording", null, /\bliterature review\b/],
+  ["book", 3, "monograph, book chapter or publisher wording", /monograph|book[-_ ]?chapter|(^|\/)book[-_ ]/m, /\b(monograph|book chapter|edited volume|publisher|isbn|book manuscript|book proposal)\b/],
+  ["proposal", 3, "funder, grant or fellowship wording", /grant|funder|funding|fellowship/m, /\b(grant|funder|funding (call|agency|body)|call for proposals|principal investigator|fellowship|work packages?)\b/],
+  ["proposal", 2, "aims or budget", /budget|(^|[/_-])aims/m, /\b(specific aims|aims and objectives|budget)\b/],
+  ["proposal", 3, "research proposal or synopsis", /proposal|synopsis|concept[-_ ]?note/m, /\b(research proposal|project proposal|synopsis|concept note)\b/],
+];
+const ARCHIVE = /(^|\/)(_?archives?|old|backup|bak|superseded|legacy)(\/|$)|\.(zip|tar|gz|7z|rar)$/i;
+
+// first bytes and lines only, so a whole manuscript is never read
+function head(p, bytes = 16384, lines = 200) {
+  let fd;
+  try { fd = openSync(p, "r"); const b = Buffer.alloc(bytes); return b.toString("utf8", 0, readSync(fd, b, 0, bytes, 0)).split("\n").slice(0, lines).join("\n"); }
+  catch { return ""; } finally { if (fd !== undefined) closeSync(fd); }
+}
+
+function detectKind(root) {
+  const files = walk(root).map((f) => posix(relative(root, f))).filter((r) => !ARCHIVE.test(r)).slice(0, 3000);
+  const paths = files.join("\n").toLowerCase();
+  const texts = [];
+  const quartoRel = files.filter((f) => /(^|\/)_quarto\.ya?ml$/.test(f)).sort((a, b) => a.length - b.length)[0];
+  const quarto = quartoRel ? head(join(root, quartoRel), 8192, 100) : "";
+  for (const f of files) {
+    if (/^(readme|agents|claude|start_here)[^/]*\.(md|txt)$/i.test(f)) texts.push(head(join(root, f)));
+    else if (/\.(md|qmd|tex)$/i.test(f) && texts.length < 80) // headings and front-matter lines only
+      texts.push(head(join(root, f)).split("\n").filter((l) => /^(#{1,2}\s|\\(title|chapter|section|begin\{abstract\})|\**(keywords?|abstract)\b|(submitted to|target journal))/i.test(l)).join("\n"));
+  }
+  const text = texts.join("\n").toLowerCase();
+  const score = {}, why = {};
+  const add = (kind, w, reason) => { score[kind] = (score[kind] ?? 0) + w; (why[kind] ??= []).push([w, reason]); };
+  for (const [kind, w, reason, pathRe, textRe] of KIND_SIGNALS) if (pathRe?.test(paths) || textRe?.test(text)) add(kind, w, reason);
+  if (/^\s*type:\s*book\b/m.test(quarto)) { add("thesis", 2, "a Quarto book project"); add("book", 1, "a Quarto book project"); }
+  const ranked = Object.entries(score).sort((a, b) => b[1] - a[1]);
+  if (!ranked.length) {
+    const bib = files.some((f) => f.endsWith(".bib"));
+    return { kind: "other", confidence: "low", signals: [bib ? "a bibliography, but nothing says what kind of work this is" : "no clear signals in file names or text"], alternatives: ["thesis", "journal-paper", "review"] };
+  }
+  const [kind, top] = ranked[0], second = ranked[1]?.[1] ?? 0;
+  const confidence = top >= 6 && top - second >= 3 ? "high" : top >= 3 && top - second >= 2 ? "medium" : "low";
+  const signals = why[kind].sort((a, b) => b[0] - a[0]).slice(0, 4).map(([, r]) => r);
+  return { kind, confidence, signals, alternatives: ranked.slice(1, 3).map(([k]) => k) };
+}
+
+const kindLine = (d) => `Detected project type: ${d.kind} (confidence ${d.confidence}). Signals: ${d.signals.join("; ")}.${d.alternatives.length ? " Alternatives: " + d.alternatives.join(", ") + "." : ""}`;
+
+function cmdDetect(opt) {
+  const d = detectKind(findRoot(opt));
+  if (opt.json) console.log(JSON.stringify(d, null, 2));
+  else console.log(kindLine(d) + "\n(Detection only: nothing is recorded until the scholar confirms.)");
+  return 0;
+}
+
 const ROLE_LABEL = {
   status: "Status", handoff: "Handoff (Stopped at / Next step)", decisions: "Decisions", sources: "Source register",
   bib: "Bibliography", style_guide: "Style guide", drafts: "Drafts", assets: "Assets and figures", quarto: "Quarto config",
@@ -210,9 +281,9 @@ const TEMPLATES = {
   "declined.md": () => `# Declined harvest candidates\n\nOne line each: date, what, why declined. Declined items are not offered again.\n`,
 };
 
-function projectMap(paths, kind) {
+function projectMap(paths) {
   const rows = Object.keys(ROLE_LABEL).map((r) => `| ${ROLE_LABEL[r]} | ${paths[r] ? "\`" + paths[r] + "\`" : "not found"} |`);
-  return `# Project map\n\nWhich file plays which Scholar role in this project (kind: ${kind}). Existing files are the source of truth; Scholar only points at them. Machine copy: \`scholar/scholar.json\`.\n\n| Role | File |\n|---|---|\n${rows.join("\n")}\n\nScholar records live in \`scholar/insights\`, \`scholar/claims\`, \`scholar/visuals\`${paths.sources === "scholar/sources/" ? ", \`scholar/sources\`" : ""} and \`scholar/harvest\`.\n`;
+  return `# Project map\n\nWhich file plays which Scholar role in this project. Existing files are the source of truth; Scholar only points at them. Machine copy and project kind: \`scholar/scholar.json\`.\n\n| Role | File |\n|---|---|\n${rows.join("\n")}\n\nScholar records live in \`scholar/insights\`, \`scholar/claims\`, \`scholar/visuals\`${paths.sources === "scholar/sources/" ? ", \`scholar/sources\`" : ""} and \`scholar/harvest\`.\n`;
 }
 
 // IDs such as SRC-0017 that already live in the project's own source register or visual ledger, so links to them validate
@@ -225,7 +296,7 @@ function registerIds(root, paths) {
   return [...ids].sort();
 }
 
-function planInit(root, kind) {
+function planInit(root, project) {
   const cfgPath = join(root, "scholar", "scholar.json");
   const existing = readJson(cfgPath);
   const date = today();
@@ -244,7 +315,8 @@ function planInit(root, kind) {
   if (!existing) {
     cfg = {
       method_version: VERSION,
-      profile: { kind: kind ?? "unset", citation_style: "APA 7", writing_profile: null },
+      profile: { citation_style: "APA 7", writing_profile: null },
+      project: project ?? { kind: null, kind_source: null }, // only ever what the scholar confirmed
       paths,
       writing: WRITING_DEFAULTS,
       harvest: { allow_domains: [], deny_terms: [] },
@@ -254,9 +326,9 @@ function planInit(root, kind) {
       external_ids: registerIds(root, paths),
     };
     files.push({ rel: "scholar/scholar.json", content: JSON.stringify(cfg, null, 2) + "\n" });
-    files.push({ rel: "scholar/PROJECT_MAP.md", content: projectMap(paths, cfg.profile.kind) });
+    files.push({ rel: "scholar/PROJECT_MAP.md", content: projectMap(paths) });
   } else if (!existsSync(join(root, "scholar", "PROJECT_MAP.md"))) {
-    files.push({ rel: "scholar/PROJECT_MAP.md", content: projectMap(paths, cfg.profile?.kind ?? "unset") });
+    files.push({ rel: "scholar/PROJECT_MAP.md", content: projectMap(paths) });
   }
   for (const d of ["insights", "claims", "visuals", "harvest/pending"]) files.push({ rel: `scholar/${d}/.gitkeep`, content: "" });
   files.push({ rel: "scholar/harvest/declined.md", content: TEMPLATES["declined.md"]() });
@@ -267,15 +339,30 @@ function planInit(root, kind) {
 function cmdInit(opt) {
   const root = findRoot(opt);
   if (!opt.apply && !opt["dry-run"]) { console.error("init needs --dry-run or --apply"); return 2; }
-  const kind = typeof opt.kind === "string" ? opt.kind : null;
-  if (kind && !["thesis", "paper", "review"].includes(kind)) { console.error(`--kind must be thesis, paper or review (got ${kind})`); return 2; }
-  const plan = planInit(root, kind);
+  const kind = typeof opt.kind === "string" ? (opt.kind === "paper" ? "journal-paper" : opt.kind) : null;
+  if (kind && !KINDS.includes(kind)) { console.error(`--kind must be one of ${KINDS.join(", ")} (paper is accepted for journal-paper; got ${opt.kind})`); return 2; }
+  const detected = detectKind(root);
+  const describe = typeof opt.describe === "string" && opt.describe.trim() ? opt.describe.trim() : null;
+  let project = null;
+  if (kind) { // the scholar's confirmed answer: the detected kind or one of its alternatives, else their own definition
+    const confirmed = !describe && (kind === detected.kind || detected.alternatives.includes(kind));
+    project = { kind, kind_source: confirmed ? "detected-confirmed" : "owner-defined", ...(describe ? { description: describe } : {}) };
+  }
+  const plan = planInit(root, project);
   console.log(`Scholar init for ${root}${opt.apply ? "" : " (dry run, nothing written)"}`);
+  console.log(kindLine(detected));
   console.log("Mapped roles:");
   for (const r of Object.keys(ROLE_LABEL)) if (plan.paths[r]) console.log(`  ${r.padEnd(12)} -> ${plan.paths[r]}`);
   const missing = Object.keys(ROLE_LABEL).filter((r) => !plan.paths[r]);
   if (missing.length) console.log(`Not found: ${missing.join(", ")}`);
-  if (!plan.files.length) { console.log("No changes: scholar/ is already complete."); return 0; }
+  const current = plan.existing ? plan.cfg.project?.kind ?? null : project?.kind ?? null;
+  const patch = plan.existing && !plan.cfg.project?.kind && project; // fill a kind that was still empty; never overwrite a confirmed one
+  if (plan.existing && current && project) console.log(`Kept the confirmed project kind (${current}); init never overwrites it.`);
+  else if (patch) console.log(`${opt.apply ? "Recording" : "Would record"} project kind ${project.kind} (${project.kind_source}).`);
+  else if (project) console.log(`Project kind ${project.kind} (${project.kind_source}) goes into scholar.json.`);
+  if (!current && !project) console.log("Reminder: the project kind is not recorded. Ask the scholar, then run init --apply --kind <kind>. Never guess.");
+  if (patch && opt.apply) writeFileSync(join(root, "scholar", "scholar.json"), JSON.stringify({ ...plan.cfg, project }, null, 2) + "\n");
+  if (!plan.files.length) { if (!patch) console.log("No changes: scholar/ is already complete."); return 0; }
   console.log(`${opt.apply ? "Creating" : "Would create"} ${plan.files.length} file(s):`);
   for (const f of plan.files) {
     console.log(`  ${f.rel}`);
@@ -298,6 +385,8 @@ function cmdDoctor(opt) {
   const out = { root, scholar: { initialised: false, method_version: null }, claude: {}, codex: {}, studio_core: {}, humanizer: {} };
   const cfg = readJson(join(root, "scholar", "scholar.json"));
   if (cfg) out.scholar = { initialised: true, method_version: cfg.method_version ?? null };
+  out.project = cfg?.project ?? null;
+  out.detected = detectKind(root);
 
   const ipPath = join(home, ".claude", "plugins", "installed_plugins.json");
   const ip = readJson(ipPath);
@@ -341,6 +430,7 @@ function cmdDoctor(opt) {
   if (opt.json) { console.log(JSON.stringify(out, null, 2)); return 0; }
   console.log(`Scholar doctor (${root})`);
   console.log(`  scholar/ adopted: ${out.scholar.initialised ? "yes, method " + out.scholar.method_version : "no"}`);
+  console.log(`  project kind: ${out.project?.kind ? `${out.project.kind} (${out.project.kind_source})` : "not confirmed yet"}. ${kindLine(out.detected)}`);
   console.log(`  Claude plugins file: ${out.claude.installed_plugins_file ?? "not found"}; scholar plugins: ${out.claude.scholar_plugins.join(", ") || "none"}`);
   console.log(`  Codex skills dirs: ${out.codex.skills_dirs.filter((d) => d.exists).map((d) => d.path).join(", ") || "none exist"}`);
   console.log(`  Studio Method studio-core in Claude: ${out.studio_core.installed_in_claude ? "installed" + (out.studio_core.disabled_in_this_project ? ", disabled in this project" : ", enabled here") : "not installed"}`);
@@ -372,6 +462,17 @@ function validateAll(root) {
       const want = WRITING_TYPES[k];
       if (!want) issues.push({ level: "WARN", path: at, msg: `unknown writing key "${k}"` });
       else if (want === "array" ? !Array.isArray(v) : typeof v !== want) issues.push({ level: "ERROR", path: at, msg: `writing.${k} must be ${want === "array" ? "an array" : "a " + want}` });
+    }
+  }
+  const pj = cfg?.project;
+  if (pj !== undefined) {
+    const at = "scholar/scholar.json";
+    if (typeof pj !== "object" || pj === null || Array.isArray(pj)) issues.push({ level: "ERROR", path: at, msg: '"project" must be an object' });
+    else {
+      if (pj.kind != null && !KINDS.includes(pj.kind)) issues.push({ level: "ERROR", path: at, msg: `project.kind is ${JSON.stringify(pj.kind)}, allowed: null | ${KINDS.join(" | ")}` });
+      if (pj.kind_source != null && !KIND_SOURCES.includes(pj.kind_source)) issues.push({ level: "ERROR", path: at, msg: `project.kind_source must be ${KIND_SOURCES.join(" or ")}` });
+      if (pj.kind && !pj.kind_source) issues.push({ level: "WARN", path: at, msg: "project.kind is set but project.kind_source is missing" });
+      if (pj.description !== undefined && typeof pj.description !== "string") issues.push({ level: "ERROR", path: at, msg: "project.description must be a string" });
     }
   }
   const add = (level, r, msg) => issues.push({ level, path: r.path, msg });
@@ -482,13 +583,14 @@ function cmdStatus(opt) {
 
 // ---------- main ----------
 const HELP = `Scholar Method ${VERSION}
-  init --dry-run|--apply [--kind thesis|paper|review] [--root <repo>]
+  init --dry-run|--apply [--kind thesis|journal-paper|conference-paper|article|review|book|proposal|other] [--describe "..."] [--root <repo>]
+  detect [--json] [--root <repo>]   (read-only: what kind of project this seems to be)
   doctor [--json] [--root <repo>]
   validate [--root <repo>]
   new insight|claim|source|visual --title "..." [--root <repo>]
   status [--root <repo>]`;
 
 const { pos, opt } = parseArgs(process.argv.slice(2));
-const cmd = { init: () => cmdInit(opt), doctor: () => cmdDoctor(opt), validate: () => cmdValidate(opt), new: () => cmdNew(pos, opt), status: () => cmdStatus(opt) }[pos[0]];
+const cmd = { init: () => cmdInit(opt), detect: () => cmdDetect(opt), doctor: () => cmdDoctor(opt), validate: () => cmdValidate(opt), new: () => cmdNew(pos, opt), status: () => cmdStatus(opt) }[pos[0]];
 if (!cmd) { console.log(HELP); process.exit(pos[0] ? 2 : 0); }
 try { process.exitCode = cmd(); } catch (e) { console.error(`scholar: ${e.message}`); process.exitCode = 1; }

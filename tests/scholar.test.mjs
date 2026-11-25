@@ -54,7 +54,7 @@ test("new paper project gets its own status, handoff, decisions and sources", ()
   assert.equal(r.code, 0, r.err);
   for (const f of ["STATUS.md", "HANDOFF.md", "DECISIONS.md", "scholar.json", "PROJECT_MAP.md", "harvest/declined.md"]) assert.ok(existsSync(join(dir, "scholar", f)), f);
   const cfg = JSON.parse(readFileSync(join(dir, "scholar/scholar.json"), "utf8"));
-  assert.equal(cfg.profile.kind, "paper");
+  assert.equal(cfg.project.kind, "journal-paper");
   assert.equal(cfg.paths.status, "scholar/STATUS.md");
   assert.equal(cfg.paths.sources, "scholar/sources/");
   assert.match(sch(dir, "init", "--apply").out, /No changes/);
@@ -192,4 +192,67 @@ test("init lists IDs already in the project's own register as external_ids", () 
   writeFileSync(join(dir, "refs/source_register.md"), "| SRC-0001 | a |\n| SRC-0017 | b |\n| not-an-id | c |\n");
   sch(dir, "init", "--apply");
   assert.deepEqual(JSON.parse(readFileSync(join(dir, "scholar/scholar.json"), "utf8")).external_ids, ["SRC-0001", "SRC-0017"]);
+});
+
+// ---------- project-type detection ----------
+const detect = (dir) => JSON.parse(sch(dir, "detect", "--json").out);
+const cfgOf = (dir) => JSON.parse(readFileSync(join(dir, "scholar/scholar.json"), "utf8"));
+
+test("detect names the kind of each fixture and is write-free", () => {
+  const t = project("thesis-existing"), before = snapshot(t), st = gitStatus(t);
+  const d = detect(t);
+  assert.equal(d.kind, "thesis");
+  assert.ok(["high", "medium"].includes(d.confidence));
+  assert.ok(d.signals.length >= 1);
+  assert.deepEqual(snapshot(t), before);
+  assert.equal(gitStatus(t), st);
+  assert.equal(detect(project("paper-existing")).kind, "journal-paper");
+  assert.equal(detect(project("review-existing")).kind, "review");
+});
+
+test("detect on a near-empty folder is low confidence and offers alternatives", () => {
+  const d = detect(project("paper-new"));
+  assert.equal(d.confidence, "low");
+  assert.ok(d.alternatives.length >= 2);
+  assert.equal(detect(tmp()).confidence, "low");
+});
+
+test("init --dry-run and doctor --json include the detection", () => {
+  const dir = project("thesis-existing");
+  assert.match(sch(dir, "init", "--dry-run").out, /Detected project type: thesis/);
+  const doc = JSON.parse(sch(dir, "doctor", "--json").out);
+  assert.equal(doc.detected.kind, "thesis");
+  assert.equal(doc.project, null);
+});
+
+test("init --apply without --kind records no kind and reminds; re-run with --kind fills it once", () => {
+  const dir = project("thesis-existing");
+  const r = sch(dir, "init", "--apply");
+  assert.match(r.out, /Reminder: the project kind is not recorded/);
+  assert.equal(cfgOf(dir).project.kind, null);
+  assert.match(sch(dir, "init", "--apply", "--kind", "thesis").out, /Recording project kind thesis/);
+  assert.deepEqual(cfgOf(dir).project, { kind: "thesis", kind_source: "detected-confirmed" });
+  assert.match(sch(dir, "init", "--apply", "--kind", "review").out, /Kept the confirmed project kind/);
+  assert.equal(cfgOf(dir).project.kind, "thesis");
+});
+
+test("init --kind records detected-confirmed or owner-defined; paper is an alias", () => {
+  const a = project("paper-existing");
+  sch(a, "init", "--apply", "--kind", "paper");
+  assert.deepEqual(cfgOf(a).project, { kind: "journal-paper", kind_source: "detected-confirmed" });
+  const b = project("review-existing");
+  assert.equal(sch(b, "init", "--apply", "--kind", "other", "--describe", "A living evidence map, not a review").code, 0);
+  assert.deepEqual(cfgOf(b).project, { kind: "other", kind_source: "owner-defined", description: "A living evidence map, not a review" });
+  assert.equal(sch(project("paper-new"), "init", "--apply", "--kind", "novel").code, 2);
+  assert.equal(sch(b, "validate").code, 0);
+});
+
+test("validate rejects a bad project kind", () => {
+  const dir = project("thesis-existing");
+  sch(dir, "init", "--apply", "--kind", "thesis");
+  const c = cfgOf(dir); c.project.kind = "memoir";
+  writeFileSync(join(dir, "scholar/scholar.json"), JSON.stringify(c));
+  const r = sch(dir, "validate");
+  assert.equal(r.code, 1);
+  assert.match(r.out, /project\.kind is "memoir"/);
 });

@@ -5,21 +5,21 @@
   },
   "metadata": {
     "description": "Scholar Method: a scholar-led research companion for inquiry, evidence, thinking, writing and continuity.",
-    "version": "0.1.1"
+    "version": "0.1.2"
   },
   "plugins": [
     {
       "name": "scholar",
       "source": "./plugins/scholar",
       "description": "Everything in one install: Scholar Core, Research, Writing and Publish.",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "displayName": "Scholar Method · all packs"
     },
     {
       "name": "scholar-core",
       "source": "./plugins/scholar-core",
       "description": "How we work with a scholar: start or adopt a research project without overwriting it, the scholar contract (evidence integrity, approvals, conversation posture), catch-up and check-out, harvest and forge.",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "displayName": "Scholar Core · way of working"
     },
     {
