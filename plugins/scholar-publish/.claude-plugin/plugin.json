@@ -1,6 +1,6 @@
 {
   "name": "scholar-publish",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "From manuscript to submission: a build with preflight checks and a pre-submission checklist for a journal, conference or university.",
   "author": {
     "name": "Aavriti Design Studio"
@@ -8,5 +8,8 @@
   "keywords": [
     "publishing",
     "submission"
+  ],
+  "dependencies": [
+    "scholar-core"
   ]
 }

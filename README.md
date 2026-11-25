@@ -53,13 +53,12 @@ Needs Node 18 or newer for the scripts (no packages to install). Source: https:/
 ### Claude Code
 ```
 /plugin marketplace add rajeevScorpion/scholar-method
-/plugin install scholar-core@scholar-method
-/plugin install scholar-research@scholar-method
-/plugin install scholar-writing@scholar-method
-/plugin install scholar-publish@scholar-method
+/plugin install scholar@scholar-method
 ```
+`scholar` is a bundle: one install brings all four packs through plugin dependencies. To pick packs instead,
+install any of `scholar-research`, `scholar-writing` or `scholar-publish`; each pulls in `scholar-core` itself.
 To test from a local checkout, pass its folder path to `/plugin marketplace add` instead.
-Update: `/plugin marketplace update scholar-method`, then update each pack. Uninstall: `/plugin uninstall scholar-core@scholar-method`.
+Update: `/plugin marketplace update scholar-method` (dependencies follow). Uninstall: `/plugin uninstall scholar@scholar-method`, then the packs.
 Skills appear namespaced (`scholar-core:catch-up`) and also load from plain words ("catch up").
 
 ### Codex

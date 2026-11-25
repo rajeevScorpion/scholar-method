@@ -1,6 +1,6 @@
 {
   "name": "scholar-research",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Thinking and evidence: reflect on loose ideas, find and read secondary sources, map claims to questions, analyse supplied data and draw evidence-linked visuals.",
   "author": {
     "name": "Aavriti Design Studio"
@@ -9,5 +9,8 @@
     "research",
     "sources",
     "evidence"
+  ],
+  "dependencies": [
+    "scholar-core"
   ]
 }

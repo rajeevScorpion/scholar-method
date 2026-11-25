@@ -31,7 +31,7 @@ for (let i = 0; i < args.length; i++) {
 const fail = (m) => { console.error(`install: ${m}`); process.exit(2); };
 
 if (opt.agent === "claude") {
-  console.log("Claude Code installs through the plugin marketplace:\n  /plugin marketplace add <path-or-git-url-of-this-repo>\n  /plugin install scholar-core@scholar-method");
+  console.log("Claude Code installs through the plugin marketplace:\n  /plugin marketplace add rajeevScorpion/scholar-method\n  /plugin install scholar@scholar-method   (bundle: all four packs)");
   process.exit(0);
 }
 if (opt.agent !== "codex") fail("use --agent codex (or --agent claude for the Claude commands)");

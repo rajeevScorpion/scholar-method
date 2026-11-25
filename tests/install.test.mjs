@@ -26,7 +26,7 @@ test("install, update, then uninstall only what it owns", () => {
     const marker = JSON.parse(readFileSync(join(target, s, ".scholar-method.json"), "utf8"));
     assert.match(marker.pack, /^scholar-(core|research|writing|publish)$/);
     assert.equal(marker.skill, s);
-    assert.equal(marker.version, "0.1.0");
+    assert.equal(marker.version, JSON.parse(readFileSync(join(REPO, "plugins", marker.pack, ".claude-plugin", "plugin.json"), "utf8")).version);
     assert.equal(marker.source, REPO);
     assert.ok(existsSync(join(target, s, "SKILL.md")));
   }

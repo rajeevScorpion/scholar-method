@@ -1,7 +1,7 @@
 # Start a research project on Scholar Method
 
-Install the skills first (see the README): Claude Code with `/plugin marketplace add ...` and
-`/plugin install scholar-core@scholar-method`, or Codex with `node install/install.mjs --agent codex --project .`.
+Install the skills first (see the README): Claude Code with `/plugin marketplace add rajeevScorpion/scholar-method` and
+`/plugin install scholar@scholar-method` (all four packs), or Codex with `node install/install.mjs --agent codex --project .`.
 
 Then paste this into the first session in your research repo (Claude Code or Codex):
 

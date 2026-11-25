@@ -1,6 +1,12 @@
 # Changelog
 
-## 0.1.0 (unreleased, not pushed)
+## 0.1.1 (2026-11-25)
+- New `scholar` bundle plugin: `/plugin install scholar@scholar-method` installs all four packs through plugin
+  dependencies (tested on Claude Code 2.1.318).
+- `scholar-research`, `scholar-writing` and `scholar-publish` declare `scholar-core` as a dependency.
+- Visuals reuse a project's existing ledger and ID scheme; Humanizer installs default to project scope.
+
+## 0.1.0 (2026-11-25)
 Marketplace `scholar-method` with four packs and 16 skills.
 
 - **scholar-core:** `scholar-contract`, `scholar-start`, `catch-up`, `check-out`, `harvest`, `forge`.

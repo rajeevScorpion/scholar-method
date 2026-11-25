@@ -9,14 +9,14 @@ const json = (p) => JSON.parse(readFileSync(join(REPO, p), "utf8"));
 test("marketplace and plugin versions agree, four packs exist", () => {
   const mk = json(".claude-plugin/marketplace.json");
   assert.equal(mk.name, "scholar-method");
-  assert.deepEqual(mk.plugins.map((p) => p.name), ["scholar-core", "scholar-research", "scholar-writing", "scholar-publish"]);
+  assert.deepEqual(mk.plugins.map((p) => p.name), ["scholar", "scholar-core", "scholar-research", "scholar-writing", "scholar-publish"]);
   for (const p of mk.plugins) {
     const pj = json(`plugins/${p.name}/.claude-plugin/plugin.json`);
     assert.equal(pj.name, p.name);
     assert.equal(pj.version, p.version, `${p.name} version mismatch`);
     assert.equal(p.source, `./plugins/${p.name}`);
   }
-  assert.equal(mk.metadata.version, "0.1.0");
+  assert.equal(mk.metadata.version, "0.1.1");
 });
 
 test("scholar.mjs VERSION equals the scholar-core version", () => {
