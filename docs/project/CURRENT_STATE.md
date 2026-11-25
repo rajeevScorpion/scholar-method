@@ -21,7 +21,7 @@ Scholar Method is a scholar-led research companion: one Claude Code marketplace 
 
 ## Open
 - Thesis has no CSL file (renders Chicago, not APA 7): fix with `style.mjs use apa-7` at adoption. MLA/Chicago/Harvard/Vancouver not rendered; TinyTeX PDF untested; convert skips corporate authors and n.d.
-- Codex continuity not run: local Codex 0.29.0 config fails to load (owner to update/fix).
+- Codex CLI updated to 0.172.0; real Codex continuity run passed (`docs/validation/codex-continuity.md`).
 - HTML viewers not opened in a browser; Mermaid parsed not rendered; Oxford-comma check is heuristic.
 - Installed from GitHub on this machine (user scope, all packs enabled) on 2026-11-25. Per-project approvals: `docs/OWNER-APPROVALS.md`.
 

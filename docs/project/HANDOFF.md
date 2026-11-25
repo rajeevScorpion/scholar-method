@@ -8,7 +8,7 @@
 
 **Owner to-do:**
 - Approve the Studio Method harvest push (`D:\DEV\studio-method`, commit 59426cc, studio-core 0.1.27).
-- Fix `~/.codex/config.toml` (unknown effort level, `n8n-mcp` without `command`, a model the account cannot use), then install for Codex with `node install/install.mjs --agent codex --project <thesis>`.
+- Codex works now (CLI 0.172.0). When ready, install for Codex with `node install/install.mjs --agent codex --project <thesis>`.
 
 **Open:** see `docs/project/CURRENT_STATE.md` (Open). Still undecided: auto-migrate an old `profile.citation_style` into `citation`. Expect small fixes after the first real thesis session; make them here with `forge`.
 

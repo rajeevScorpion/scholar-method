@@ -30,7 +30,7 @@ synthetic fixtures copied to temp folders. "Pass" means the command exited 0 on 
 |---|---|---|
 | M1 independent repo, attribution, licence, manifests, versions | `NOTICE.md`, `LICENSE`, repo tests, `claude plugin validate` | pass; it is a fresh-history copy, not a fork |
 | M2 understanding-first adoption, idempotent, uncommitted work preserved | `scholar.test.mjs`, `scenarios.test.mjs` "milestone 2" | pass (dry run writes nothing; second apply changes nothing; the modified and untracked files are untouched) |
-| M3 cross-agent continuity | `scenarios.test.mjs` scenario 6 (a clone carries only repo files; hook and CLI recover; Codex install lands 16 skills and the installed copies run); `docs/validation/claude-continuity.md` (real `claude -p` run) | pass for files, hook, CLI and one real Claude run; no real Codex run, see limitations |
+| M3 cross-agent continuity | `scenarios.test.mjs` scenario 6 (a clone carries only repo files; hook and CLI recover; Codex install lands 16 skills and the installed copies run); `docs/validation/claude-continuity.md` (real `claude -p` run) | pass for files, hook, CLI, one real Claude run and one real Codex run (`docs/validation/codex-continuity.md`) |
 | M4 scholar-led conversation; a hypothesis stays a hypothesis after a new session | `scenarios.test.mjs` "milestone 4" on `examples/research`; `research-example.test.mjs` | pass for recovery and records; the conversational behaviour itself is skill text, not testable by script |
 | M5 credible workflow (source, claim, RQ, citations, missing-data gate) | `writing-cite`, `research-graph`, `writing-examples` tests, `examples/writing/04-evidence-to-draft` | pass for the mechanical parts |
 | M6 writing contract | `writing-lint`, `writing-factguard`, `writing-examples` (AI-sounding abstract, citation and number preservation, journal override) | pass; Humanizer was not installed or run |
@@ -66,10 +66,8 @@ Not verified: the other styles (MLA, Chicago, Harvard, Vancouver) were not rende
 LaTeX PDF output (TinyTeX is not installed here); the exact wording of each CSL against the printed manuals.
 
 ## Limitations
-- **Real Codex run not done.** The local Codex CLI is 0.29.0 and its global config fails to load with it (an unknown
-  `model_reasoning_effort` value, an MCP server entry without `command`); after overriding those on the command line the
-  configured model was rejected for the ChatGPT account. Codex continuity is therefore shown only through the installer
-  and the installed scripts, not through a live Codex session.
+- **Real Codex run done after updating the CLI.** The old npm Codex CLI (0.29.0) could not read a config written by the
+  newer Codex app; updating to 0.172.0 fixed it with no config change. See `docs/validation/codex-continuity.md`.
 - **Claude continuity** is one run of one model with read-only tools and Scholar Method not installed in that session.
 - **HTML viewers were not opened in a browser.** The Vega-Lite and Cytoscape pages are generated and their JSON specs
   are checked; rendering in a browser was not verified.
