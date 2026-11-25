@@ -10,8 +10,8 @@ reviewed proposal. The scholar's own insights, data, manuscripts and interpretat
 scholar chooses to publish them elsewhere. Nothing goes outward without a yes. Ask means AskUserQuestion in Claude
 Code, a plain question in Codex. `$HARVEST` is `scripts/harvest.mjs` in this skill folder (Claude Code:
 `${CLAUDE_PLUGIN_ROOT}/skills/harvest/scripts/harvest.mjs`). Every command takes `--root <project>`.
-Projects never read each other's records: a harvest sees only this project (and `related_projects` the scholar
-listed in `scholar/scholar.json`).
+Projects never read each other's records: a harvest and its privacy scan see only this project, even when
+`related_projects` is set.
 
 ## 1. Collect candidates (from this session only)
 Look for: corrections the scholar made twice; rules they stated ("never", "always", "from now on"); steps that went
