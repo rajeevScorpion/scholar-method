@@ -10,15 +10,16 @@ spellings are the house style; US spellings are accepted as aliases (analyse or 
 | "check out", "wrap up", "close the session" | Review captured insights, update status and handoff, validate, offer harvest, commit locally | check-out | core |
 | "harvest", "add this to the method" | Offer reusable lessons from the session for the method, after review | harvest | core |
 | "forge", "make this a skill" | Maintainer adds or changes a skill in the method repo | forge | core |
-| "reflect", "I have a thought", "I keep noticing" | Mirror the idea, link it to the record, offer a rival view, note it for capture | scholar-contract | core |
-| "research", "what has been published on" | Find and critically read secondary sources, register them with read status | scholar-research (coming) | research |
-| "evidence", "map this to the questions" | Link claims, sources and questions; show gaps | scholar-research (coming) | research |
-| "analyse", "analyze" | Transparent analysis of supplied data, with assumptions stated | scholar-research (coming) | research |
-| "visualise", "visualize", "map it", "chart it" | Evidence-linked chart, timeline or diagram with a sidecar record | scholar-research (coming) | research |
-| "draft" | Author-directed, evidence-gated drafting, only when asked | scholar-writing (coming) | writing |
-| "voice review" | Check prose against the style guide and writing profile, without rewriting unasked | scholar-writing (coming) | writing |
-| "cite", "check citations" | Verify each citation supports its sentence | scholar-writing (coming) | writing |
-| "build" | Render the manuscript (Quarto, Word, PDF) | scholar-publish (coming) | publish |
+| "reflect", "I have a thought", "I keep noticing" | Mirror the idea, link it to the record, offer a rival view, note it for capture | reflect | research |
+| "research", "what has been published on" | Find and critically read secondary sources, register them with read status | research | research |
+| "evidence", "map this to the questions" | Link claims, sources and questions; show gaps | evidence | research |
+| "analyse", "analyze" | Transparent analysis of supplied data, with assumptions stated | analyse | research |
+| "visualise", "visualize", "map it", "chart it" | Evidence-linked chart, timeline or diagram with a sidecar record | visualise | research |
+| "draft" | Author-directed, evidence-gated drafting, only when asked | draft | writing |
+| "voice review", "check my style", "lint this" | Lint prose, check it against the style guide and writing profile, without rewriting unasked | voice-review | writing |
+| "cite", "check citations" | Verify each citation supports its sentence | cite | writing |
+| "build" | Render the manuscript (Quarto, Word, PDF) after a preflight | build | publish |
+| "submission check", "ready to submit" | Walk the pre-submission checklist for a venue | submission-check | publish |
 
 Words for records: an **insight** is a provisional thought of the scholar's; a **claim** is one exact statement tied
 to its support; a **source** is something read; a **visual** is a figure with its inputs. **Handoff** is the note a

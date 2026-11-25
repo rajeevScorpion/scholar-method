@@ -24,17 +24,24 @@ own repository, so any session, on any machine, in either agent, can pick up whe
 
 One marketplace, four packs. Skills load on demand by name or by plain-language trigger.
 
-| Pack | Skill | What it does | State |
+| Pack | Skill | What it does | Say |
 |---|---|---|---|
-| scholar-core | `scholar-contract` | The standing rules: partnership, evidence integrity, approvals, how to talk | ready |
-| scholar-core | `scholar-start` | Understand a repo first, map it, adopt it without overwriting; Humanizer check | ready |
-| scholar-core | `catch-up` | A 4 to 5 bullet snapshot of where you left off | ready |
-| scholar-core | `check-out` | Close a session: review insights, update status and handoff, validate, commit locally | ready |
-| scholar-core | `harvest` | Offer reusable lessons to the method, anonymised, after review | ready |
-| scholar-core | `forge` | Maintainer adds or improves a skill | ready |
-| scholar-research | explore, research, ingest, verify-source, evidence-map, analyse, visualise, map, challenge | Thinking and evidence | coming in 0.1 |
-| scholar-writing | draft, voice-review, cite, review, revision-response | Author-directed writing support | coming in 0.1 |
-| scholar-publish | build, format-check, submission-check, publication-map | From manuscript to submission | coming in 0.1 |
+| scholar-core | `scholar-contract` | The standing rules: partnership, evidence integrity, approvals, how to talk | loaded every session |
+| scholar-core | `scholar-start` | Understand a repo first, map it, adopt it without overwriting; Humanizer check | "scholar start", "adopt the method" |
+| scholar-core | `catch-up` | A 4 to 5 bullet snapshot of where you left off | "catch up", "where did we leave off" |
+| scholar-core | `check-out` | Close a session: review insights, update status and handoff, validate, commit locally | "check out", "wrap up" |
+| scholar-core | `harvest` | Offer reusable lessons to the method, anonymised, privacy-checked, after your review | "harvest", "add this to the method" |
+| scholar-core | `forge` | Maintainer adds or improves a skill, or applies a harvest proposal | "forge", "make this a skill" |
+| scholar-research | `reflect` | Think aloud: mirror the idea, rival explanations, link to records, provisional capture | "I have a hunch", "reflect" |
+| scholar-research | `research` | Find and read secondary sources, register them with read status | "research", "what has been published on" |
+| scholar-research | `evidence` | Map claims to sources and questions; show gaps and a relationship graph | "evidence", "map this to the questions" |
+| scholar-research | `analyse` | Transparent analysis of data you supply, assumptions stated | "analyse", "what does this dataset show" |
+| scholar-research | `visualise` | Evidence-linked chart, network or diagram with a provenance sidecar | "visualise", "chart it", "map it" |
+| scholar-writing | `draft` | Evidence-gated prose from your approved argument, only when asked | "draft", "write up this section" |
+| scholar-writing | `voice-review` | Prose linter, style review, optional Humanizer pass behind a fact guard | "voice review", "lint this", "does this sound like AI" |
+| scholar-writing | `cite` | Check every citation resolves and supports its sentence | "cite", "check citations" |
+| scholar-publish | `build` | Preflight checks, then the project's own Quarto, Word or PDF build | "build", "render the manuscript" |
+| scholar-publish | `submission-check` | Pre-submission checklist for a journal, conference or university | "submission check", "ready to submit?" |
 
 The words you can say are in `plugins/scholar-core/skills/scholar-contract/references/glossary.md`. Plain
 language always works.
@@ -46,7 +53,7 @@ language always works.
 /plugin marketplace add <path-or-git-url-of-this-repo>
 /plugin install scholar-core@scholar-method
 ```
-Add `scholar-research`, `scholar-writing` and `scholar-publish` the same way when their skills arrive. To update:
+Add `scholar-research`, `scholar-writing` and `scholar-publish` the same way. To update:
 `/plugin marketplace update scholar-method`, then update the pack.
 
 ### Codex

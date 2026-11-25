@@ -53,6 +53,9 @@ const SCHEMA = {
   },
 };
 const TYPES = Object.keys(SCHEMA);
+// defaults for the `writing` object (lint rules; the writing profile itself is opt-in via profile.writing_profile)
+const WRITING_DEFAULTS = { no_dashes: true, no_oxford_comma: true, serial_comma: false, spelling: "indian", no_contractions: true, ai_register: true, protected_terms: [] };
+const WRITING_TYPES = { no_dashes: "boolean", no_oxford_comma: "boolean", serial_comma: "boolean", spelling: "string", no_contractions: "boolean", ai_register: "boolean", protected_terms: "array" };
 
 // ---------- small helpers ----------
 const today = () => new Date().toLocaleDateString("en-CA");
@@ -224,6 +227,7 @@ function planInit(root, kind) {
       method_version: VERSION,
       profile: { kind: kind ?? "unset", citation_style: "APA 7", writing_profile: null },
       paths,
+      writing: WRITING_DEFAULTS,
       capture: "batch",
       harvest_outbox: "tracked",
       related_projects: [],
@@ -340,6 +344,16 @@ function validateAll(root) {
   const cfg = readJson(join(root, "scholar", "scholar.json"));
   const { recs, problems } = loadRecords(root);
   const issues = [...problems];
+  const w = cfg?.writing;
+  if (w !== undefined) {
+    const at = "scholar/scholar.json";
+    if (typeof w !== "object" || w === null || Array.isArray(w)) issues.push({ level: "ERROR", path: at, msg: '"writing" must be an object' });
+    else for (const [k, v] of Object.entries(w)) {
+      const want = WRITING_TYPES[k];
+      if (!want) issues.push({ level: "WARN", path: at, msg: `unknown writing key "${k}"` });
+      else if (want === "array" ? !Array.isArray(v) : typeof v !== want) issues.push({ level: "ERROR", path: at, msg: `writing.${k} must be ${want === "array" ? "an array" : "a " + want}` });
+    }
+  }
   const add = (level, r, msg) => issues.push({ level, path: r.path, msg });
   const known = new Set(), seen = new Map();
   for (const r of recs) {

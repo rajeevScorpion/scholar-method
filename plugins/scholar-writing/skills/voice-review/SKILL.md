@@ -12,11 +12,11 @@ path in Claude Code). `$SKILL` is this skill folder (Claude Code: `${CLAUDE_PLUG
 
 ## 1. Find the rules (highest wins)
 1. Read `scholar/scholar.json`: `profile.writing_profile` (a name such as `indian-academic-english`, or a path;
-   a plain string `profile` is accepted too), `paths.style_guide`, `paths.decisions`, and the `writing` object.
+   null or absent means no profile), `paths.style_guide`, `paths.decisions`, and the `writing` object.
 2. Order: venue or institution rules, project decisions, project style guide, the profile in
    `$SKILL/references/profiles/<name>.md`, Scholar defaults, Humanizer. Say in one line which layers apply.
-3. No profile selected? Do not impose one. Run only the checks the scholar asks for (set the `writing` keys to
-   match). The profile is opt-in.
+3. No profile selected? Do not impose one. The `writing` lint defaults still apply (new projects carry them); a
+   project turns a rule off by setting its key to false. The profile is opt-in; the lint defaults are not.
 
 ## 2. Lint (hard rules, report-only)
 Run `node $SKILL/scripts/lint-prose.mjs <files> [--config scholar/scholar.json] [--strict]` on authored files

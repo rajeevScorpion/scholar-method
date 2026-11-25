@@ -20,16 +20,28 @@ scholar/
   STATUS.md  HANDOFF.md  DECISIONS.md     only if the project has no equivalent
   insights/INS-0001.md   claims/CLM-0001.md   visuals/VIS-0001.md
   sources/SRC-0001.md    only if the project has no source register
-  harvest/pending/  harvest/declined.md
+  harvest/pending/HRV-<date>-<slug>.md   harvest/declined.md
 ```
 
 ## scholar.json
-`method_version`, `profile` (`kind` thesis|paper|review|unset, `citation_style`, `writing_profile` path or null),
+`method_version`, `profile` (`kind` thesis|paper|review|unset, `citation_style`, `writing_profile`: a profile name such as
+`indian-academic-english`, a repo-relative path, or null; the only place a writing profile is selected),
 `paths` (status, handoff, decisions, sources, bib, style_guide, drafts, assets, quarto, agents_md, claude_md,
 codex_agents; each a repo-relative path or null), `capture` (`batch|ask|off`), `harvest_outbox` (`tracked|ignored`),
-`related_projects` (empty unless the scholar opts in, naming each project), `external_ids` (IDs or citekeys that
+`writing` (lint switches, below), `related_projects` (empty unless the scholar opts in, naming each project), `external_ids` (IDs or citekeys that
 live outside `scholar/`, for example the project's own register IDs). Citekeys found in the mapped `.bib` file also
 count as known.
+
+### `writing` (prose lint rules)
+New projects get these defaults. They apply whether or not a writing profile is selected: a project turns a rule
+off by editing the key, and a venue override is recorded in the decisions file as well. The profile stays opt-in
+(`profile.writing_profile` null means none).
+```json
+"writing": {"no_dashes": true, "no_oxford_comma": true, "serial_comma": false, "spelling": "indian",
+            "no_contractions": true, "ai_register": true, "protected_terms": []}
+```
+`spelling` is `indian`, `us` or `off`; `protected_terms` is a list of strings; the rest are booleans.
+`validate` type-checks these and warns on unknown keys. Missing keys fall back to the defaults in `lint-prose.mjs`.
 
 ## Insight
 Fields: `id, created, updated, title, kind, maturity, author_decision, evidence_status, rq, sources, claims, related`.

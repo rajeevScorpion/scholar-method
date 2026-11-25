@@ -156,3 +156,19 @@ test("doctor reports Humanizer provenance and studio-core", () => {
   j = JSON.parse(run(SCHOLAR, ["doctor", "--json", "--root", dir], { env: homeEnv(tmp("scholar-empty-")) }).out);
   assert.equal(j.humanizer.status, "absent");
 });
+
+test("init writes the default writing object; writing profile stays opt-in; validate type-checks writing", () => {
+  const dir = adopted();
+  const cfgPath = join(dir, "scholar/scholar.json");
+  const cfg = JSON.parse(readFileSync(cfgPath, "utf8"));
+  assert.deepEqual(cfg.writing, { no_dashes: true, no_oxford_comma: true, serial_comma: false, spelling: "indian", no_contractions: true, ai_register: true, protected_terms: [] });
+  assert.equal(cfg.profile.writing_profile, null);
+  assert.equal(sch(dir, "validate").code, 0);
+  cfg.writing.no_dashes = "yes"; cfg.writing.protected_terms = "x"; cfg.writing.mystery = 1;
+  writeFileSync(cfgPath, JSON.stringify(cfg));
+  const v = sch(dir, "validate");
+  assert.equal(v.code, 1);
+  assert.match(v.out, /writing\.no_dashes must be a boolean/);
+  assert.match(v.out, /writing\.protected_terms must be an array/);
+  assert.match(v.out, /WARN .*unknown writing key "mystery"/);
+});

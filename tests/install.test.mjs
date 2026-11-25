@@ -4,7 +4,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { INSTALL, REPO, run, snapshot, tmp, homeEnv } from "./helpers.mjs";
 
-const SKILLS = ["scholar-contract", "scholar-start", "catch-up", "check-out", "harvest", "forge"];
+const SKILLS = ["scholar-contract", "scholar-start", "catch-up", "check-out", "harvest", "forge"]; // core only (--packs core)
+const ALL16 = [...SKILLS, "reflect", "research", "evidence", "analyse", "visualise", "draft", "voice-review", "cite", "build", "submission-check"];
 
 test("dry run writes nothing", () => {
   const target = tmp("scholar-codex-");
@@ -21,21 +22,22 @@ test("install, update, then uninstall only what it owns", () => {
   writeFileSync(join(target, "checkout/SKILL.md"), "someone else's skill\n");
   let r = run(INSTALL, ["--agent", "codex", "--target", target]);
   assert.equal(r.code, 0, r.err);
-  for (const s of SKILLS) {
+  for (const s of ALL16) {
     const marker = JSON.parse(readFileSync(join(target, s, ".scholar-method.json"), "utf8"));
-    assert.equal(marker.pack, "scholar-core");
+    assert.match(marker.pack, /^scholar-(core|research|writing|publish)$/);
+    assert.equal(marker.skill, s);
     assert.equal(marker.version, "0.1.0");
     assert.equal(marker.source, REPO);
     assert.ok(existsSync(join(target, s, "SKILL.md")));
   }
   assert.ok(existsSync(join(target, "scholar-start/scripts/scholar.mjs")));
   assert.match(r.out, /## Scholar Method/); // prints the AGENTS.md snippet, writes none
-  assert.match(r.out, /coming later/); // empty packs
+  assert.doesNotMatch(r.out, /coming later|no skills yet/);
   r = run(INSTALL, ["--agent", "codex", "--target", target]);
   assert.match(r.out, /update catch-up/);
   r = run(INSTALL, ["--agent", "codex", "--target", target, "--uninstall"]);
   assert.equal(r.code, 0);
-  for (const s of SKILLS) assert.ok(!existsSync(join(target, s)));
+  for (const s of ALL16) assert.ok(!existsSync(join(target, s)));
   assert.equal(readFileSync(join(target, "checkout/SKILL.md"), "utf8"), "someone else's skill\n");
 });
 
