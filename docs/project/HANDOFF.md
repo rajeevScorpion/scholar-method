@@ -1,11 +1,15 @@
 # Handoff, 2026-11-25
 
-**Stopped at:** 0.1.3 pushed to https://github.com/rajeevScorpion/scholar-method: four packs plus the `scholar` bundle, project-type detection, APA 7 default with style switching and citation conversion, Quarto checks. README rewritten in the Studio Method style (local commit, not yet pushed).
+**Stopped at:** Scholar Method 0.1.3 on GitHub (https://github.com/rajeevScorpion/scholar-method). Installed on this machine from GitHub at user scope: `scholar@scholar-method` plus its four packs, all enabled. The session hook stays silent in repos without `scholar/`.
 
-**In flight:** nothing. Three local commits await the owner's push approval (README, "check in" alias, handoff).
+**In flight:** nothing. No helpers, timers or processes running.
 
-**Open questions:** auto-migrate an old `profile.citation_style` into `citation`? Should Scholar visuals reuse the thesis `VIS-####` numbering (owner said yes: reuse existing systems).
+**Next session:** in `D:\PHD\phd_thesis_os_gui_graphic_design`, say "scholar start". Read first: `private/thesis-dry-run.md` in this repo (gitignored; proposed mapping, stale records, deny terms). Decisions already made: adoption allowed; studio-core disabled per research repo (ask there); Humanizer installed per project only after the scholar's yes; visuals reuse the thesis `VIS-####` ledger; APA 7 is the default and the thesis needs `style.mjs use apa-7` (it has no CSL, so it renders Chicago).
 
-**Next step:** install the plugins (`/plugin install scholar@scholar-method`), then open a session in the thesis repo and say "scholar start". Owner to-dos: fix `~/.codex/config.toml` so Codex can run; at adoption, approve `style.mjs use apa-7` (the thesis has no CSL, so it renders Chicago).
+**Owner to-do:**
+- Approve the Studio Method harvest push (`D:\DEV\studio-method`, commit 59426cc, studio-core 0.1.27).
+- Fix `~/.codex/config.toml` (unknown effort level, `n8n-mcp` without `command`, a model the account cannot use), then install for Codex with `node install/install.mjs --agent codex --project <thesis>`.
 
-**Session words in this repo:** this is the method's source code, so "catch up" and "check out" run Studio Method's skills against `docs/project/`. Lessons for Scholar Method itself go in through `forge` here, not Studio's harvest.
+**Open:** see `docs/project/CURRENT_STATE.md` (Open). Still undecided: auto-migrate an old `profile.citation_style` into `citation`. Expect small fixes after the first real thesis session; make them here with `forge`.
+
+**How we work:** this repo is software, so "catch up" and "check out" use Studio Method's skills here. Ask before every push. No AI attribution in commits. Never edit the thesis from this repo.
