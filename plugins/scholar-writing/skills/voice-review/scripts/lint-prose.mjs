@@ -141,7 +141,7 @@ function lint(file) {
     for (const f of FAM) each(us ? f[2] : f[0], (m) => {
       const before = t.slice(0, m.index).match(/([A-Za-z]+)\s+$/)?.[1] ?? "", after = t.slice(m.index + m[0].length).match(/^\s+([A-Za-z]+)/)?.[1] ?? "";
       const cap = (w) => /^[A-Z]/.test(w);
-      if (cap(m[0]) && (cap(before) || cap(after))) return; // part of a proper name, for example "International Organization"
+      if (cap(m[0]) && (cap(before) || cap(after) || (before && !/[.!?:]\s*$/.test(t.slice(0, m.index))))) return; // part of a proper name, for example "International Organization"
       add(m.index, m[0].length, us ? "uk-spelling" : "us-spelling", "error", `${us ? "British" : "US"} spelling "${m[0]}": use "${(us ? f[3] : f[1])(...m)}"`);
     });
   }

@@ -112,10 +112,15 @@ for (const file of targets) {
   for (const m of t.matchAll(/^[ \t]*>[^\n]*(?:\n[ \t]*>[^\n]*)*/gm)) quotes.push({ o: m.index, len: m[0].length, words: m[0].split(/\s+/).length, block: true });
   for (const q of quotes) {
     if (q.words < 3) continue;
-    const paraStart = Math.max(t.lastIndexOf("\n\n", q.o) + 2, q.o - 200), end = q.o + q.len;
-    let paraEnd = t.indexOf("\n\n", end); paraEnd = paraEnd < 0 ? t.length : paraEnd;
-    const win = t.slice(paraStart, Math.min(paraEnd, end + (q.block ? 200 : 120)));
-    if (!LOCATOR.test(win)) add(q.o, "quote-no-locator", "warn", "quotation without a page or figure locator nearby (and cited source?)");
+    // window: the sentence holding the quote (or the 200 characters after a block quote)
+    const end = q.o + q.len, SENT = /[.!?]["”)\]]?[ \t]+(?=[A-Z@\[(])/g;
+    const from = Math.max(t.lastIndexOf("\n\n", q.o) + 2, q.o - 300);
+    let start = from;
+    for (const s of t.slice(from, q.o).matchAll(SENT)) start = from + s.index + s[0].length;
+    let stop = t.indexOf("\n\n", end); stop = stop < 0 ? t.length : stop;
+    if (q.block) stop = Math.min(stop, end + 200);
+    else { const s = t.slice(end, stop).search(SENT); if (s >= 0) stop = end + s; }
+    if (!LOCATOR.test(t.slice(start, stop))) add(q.o, "quote-no-locator", "warn", "quotation without a page or figure locator nearby (and cited source?)");
   }
   // claims comments, paragraph by paragraph
   let off = 0;
