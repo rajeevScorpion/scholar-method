@@ -1,0 +1,29 @@
+{
+  "method_version": "0.1.0",
+  "profile": { "kind": "paper", "citation_style": "APA 7", "writing_profile": "indian-academic-english" },
+  "paths": {
+    "status": null,
+    "handoff": null,
+    "decisions": "scholar/DECISIONS.md",
+    "sources": "scholar/sources/",
+    "bib": "refs.bib",
+    "style_guide": null,
+    "drafts": "manuscript.md",
+    "assets": null,
+    "quarto": null,
+    "agents_md": null,
+    "claude_md": null,
+    "codex_agents": null
+  },
+  "capture": "batch",
+  "harvest_outbox": "tracked",
+  "related_projects": [],
+  "external_ids": [],
+  "writing": {
+    "no_dashes": true,
+    "no_oxford_comma": false,
+    "serial_comma": true,
+    "spelling": "us",
+    "no_contractions": true
+  }
+}
