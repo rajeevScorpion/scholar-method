@@ -36,9 +36,12 @@ Skip this step in `capture: off` projects unless the scholar asks. Never add an 
 - **Status** (mapped status doc): rewrite stale lines, do not append a diary. What changed, what is verified
   versus reported, open items, next.
 - **Decisions** (mapped decisions file): record only decisions the scholar actually made, with date and reason.
-- **Handoff** (mapped handoff, overwrite): `Stopped at`, `In flight` (branches, uncommitted work),
+- **Handoff** (mapped handoff): `Stopped at`, `In flight` (branches, uncommitted work),
   `Open questions`, `Next step`, and `Read first`. Under about 40 lines. It is what the session-start hook and
-  `catch-up` read first, so keep the labels `Stopped at:` and `Next step:`.
+  `catch-up` read first, so keep the labels `Stopped at:` and `Next step:`. A file Scholar created is overwritten.
+  A project's own handoff (a longer, dated or sectioned document, or one its protocol governs) is edited in
+  place: keep its structure and history, refresh or add the two labels near the top, never replace the file. Also
+  follow the project's own session steps (an active-session claim, a session log) before and after.
 - Flag, do not fix, release loose ends: unmerged branches, commits not pushed, citation or source gaps found
   today, stale records awaiting reconciliation.
 
