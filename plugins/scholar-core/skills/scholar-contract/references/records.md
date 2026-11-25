@@ -40,7 +40,7 @@ boards, agents_md, claude_md, codex_agents; each a repo-relative path or null), 
 `writing` (lint switches, below), `harvest` (`allow_domains`: public documentation domains a proposal may link to,
 default none; `deny_terms`: words that must never appear in a proposal, such as title words, names, institution; set
 at adoption), `related_projects` (empty unless the scholar opts in, naming each project), `external_ids` (IDs or citekeys that
-live outside `scholar/`, for example the project's own register IDs). Citekeys found in the mapped `.bib` file also
+live outside `scholar/`, for example the project's own register IDs; `init` fills it from IDs found in the mapped source register and visual ledger). Citekeys found in the mapped `.bib` file also
 count as known.
 
 ### `writing` (prose lint rules)

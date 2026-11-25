@@ -185,3 +185,11 @@ test("detect maps numbered folders, Markdown chapters, visual ledger, asset regi
   assert.match(r.out, /asset_register\s+-> 04_assets\/asset_register\.md/);
   assert.match(r.out, /boards\s+-> 04_assets\/boards/);
 });
+
+test("init lists IDs already in the project's own register as external_ids", () => {
+  const dir = tmp("scholar-ext-");
+  mkdirSync(join(dir, "refs"), { recursive: true });
+  writeFileSync(join(dir, "refs/source_register.md"), "| SRC-0001 | a |\n| SRC-0017 | b |\n| not-an-id | c |\n");
+  sch(dir, "init", "--apply");
+  assert.deepEqual(JSON.parse(readFileSync(join(dir, "scholar/scholar.json"), "utf8")).external_ids, ["SRC-0001", "SRC-0017"]);
+});

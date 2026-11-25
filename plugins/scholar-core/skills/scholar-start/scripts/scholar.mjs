@@ -215,6 +215,16 @@ function projectMap(paths, kind) {
   return `# Project map\n\nWhich file plays which Scholar role in this project (kind: ${kind}). Existing files are the source of truth; Scholar only points at them. Machine copy: \`scholar/scholar.json\`.\n\n| Role | File |\n|---|---|\n${rows.join("\n")}\n\nScholar records live in \`scholar/insights\`, \`scholar/claims\`, \`scholar/visuals\`${paths.sources === "scholar/sources/" ? ", \`scholar/sources\`" : ""} and \`scholar/harvest\`.\n`;
 }
 
+// IDs such as SRC-0017 that already live in the project's own source register or visual ledger, so links to them validate
+function registerIds(root, paths) {
+  const ids = new Set();
+  for (const f of [paths.sources, paths.visual_ledger]) {
+    if (!f || f.endsWith("/") || !existsSync(join(root, f))) continue;
+    for (const m of readFileSync(join(root, f), "utf8").matchAll(/\b[A-Z]{2,5}-\d{3,5}\b/g)) ids.add(m[0]);
+  }
+  return [...ids].sort();
+}
+
 function planInit(root, kind) {
   const cfgPath = join(root, "scholar", "scholar.json");
   const existing = readJson(cfgPath);
@@ -241,7 +251,7 @@ function planInit(root, kind) {
       capture: "batch",
       harvest_outbox: "tracked",
       related_projects: [],
-      external_ids: [],
+      external_ids: registerIds(root, paths),
     };
     files.push({ rel: "scholar/scholar.json", content: JSON.stringify(cfg, null, 2) + "\n" });
     files.push({ rel: "scholar/PROJECT_MAP.md", content: projectMap(paths, cfg.profile.kind) });
